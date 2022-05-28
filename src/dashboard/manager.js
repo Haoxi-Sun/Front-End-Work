@@ -24,11 +24,10 @@ const Logo = styled.span`
 
 const classContent = {
   margin: "24px 16px",
-  padding: '24',
-  minHeight: '280',
-  background: '#fff'
-}
-
+  padding: "24",
+  minHeight: "280",
+  background: "#fff",
+};
 
 const classTrigger = {
   padding: "0 24px",
