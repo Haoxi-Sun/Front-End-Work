@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import "antd/dist/antd.css";
+import 'antd/dist/antd.min.css';
 import {
   MessageOutlined,
   ReadOutlined,
@@ -11,7 +11,7 @@ import {
 } from "@ant-design/icons";
 import { Button, Layout, Menu } from "antd";
 import styled from "styled-components";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 const { Header, Sider, Content } = Layout;
 
 const Logo = styled.span`

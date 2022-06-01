@@ -5,19 +5,19 @@ import Manager from "./dashboard/manager";
 import Student from "./dashboard/student";
 import Teacher from "./dashboard/teacher";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import StudentList from "./dashboard/manager/studentList";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
     <Router>
-      <div>
-        <Routes>
-          <Route exact path="/" element={<Login />} />
-          <Route path="dashboard/manager" element={<Manager />} />
-          <Route path="dashboard/student" element={<Student />} />
-          <Route path="dashboard/teacher" element={<Teacher />} />
-        </Routes>
-      </div>
+      <Routes>
+        <Route exact path="/" element={<Login />} />
+        <Route path="dashboard/manager" element={<Manager />} />
+        <Route path="dashboard/manager/studentList" element={<StudentList />} />
+        <Route path="dashboard/student" element={<Student />} />
+        <Route path="dashboard/teacher" element={<Teacher />} />
+      </Routes>
     </Router>
   </React.StrictMode>
 );

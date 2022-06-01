@@ -1,4 +1,4 @@
-import "antd/dist/antd.css";
+import "antd/dist/antd.min.css";
 import { LockOutlined, UserOutlined } from "@ant-design/icons";
 import {
   Form,
@@ -28,14 +28,14 @@ export default function Login() {
   const navigate = useNavigate();
 
   const handleSubmit = async (event) => {
-    const password = event.password;
-    event.password = AES.encrypt(password, "cms").toString();
-
     axios
-      .post("http://cms.chtoma.com/api/login", event)
+      .post("http://cms.chtoma.com/api/login", {
+        ...event,
+        password: AES.encrypt(event.password, "cms").toString(),
+      })
       .then((response) => {
         const data = response.data.data;
-        localStorage.setItem("Data", JSON.stringify(event));
+        localStorage.setItem("Data", JSON.stringify(data));
         navigate(`dashboard/${data.role}`, { state: data });
       })
       .catch((error) => {
