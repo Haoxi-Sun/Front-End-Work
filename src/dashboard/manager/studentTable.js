@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import "antd/dist/antd.min.css";
-import { Button, Input, Table } from "antd";
+import { Button, Input, message, Table } from "antd";
 import styled from "styled-components";
 import axios from "axios";
 const { Search } = Input;
@@ -85,7 +85,11 @@ const columns = [
     render: () => <a>Delete</a>,
   },
 ];
-
+const getRandomuserParams = (params) => ({
+    results: params.pagination?.pageSize,
+    page: params.pagination?.current,
+    ...params,
+  });
 export default function StudentTable() {
   const [data, setData] = useState();
   const [loading, setLoading] = useState(false);
@@ -94,6 +98,7 @@ export default function StudentTable() {
     pageSize: 10,
   });
 
+  const token = JSON.parse(localStorage.getItem("Data")).token;
   const fetchData = (params = {}) => {
     setLoading(true);
     axios
@@ -105,12 +110,31 @@ export default function StudentTable() {
           },
         }
       )
-      .then((response) => console.log(response));
+      .then((res) => {
+          console.log(res.data.data.students);
+    //       setData(res.data.data);
+    //       setLoading(false);
+    //       setPagination({
+    //         ...params.pagination,
+    //         total: data.total,
+    //       });
+      });
   };
+
   useEffect(() => {
     fetchData({ pagination });
   }, []);
-  return (
+
+  const handleTableChange = (newPagination, filters, sorter) => {
+    fetchData({
+      sortField: sorter.field,
+      sortOrder: sorter.order,
+      pagination: newPagination,
+      ...filters,
+    });
+  };
+
+  return  (
     <>
       <AddSearch>
         <Button type="primary">+ Add</Button>
@@ -122,7 +146,14 @@ export default function StudentTable() {
           }}
         />
       </AddSearch>
-      <Table columns={columns} />
+      <Table
+      columns={columns}
+      rowKey={(record) => record.login.uuid}
+      dataSource={data}
+      pagination={pagination}
+      loading={loading}
+      onChange={handleTableChange}
+    />
     </>
   );
 }
