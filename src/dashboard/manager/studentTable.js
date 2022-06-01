@@ -98,12 +98,17 @@ export default function StudentTable() {
     setLoading(true);
     axios
       .get(
-        `http://cms.chtoma.com/api/students?page=${pagination.current}&limit=${pagination.pageSize}`
+        `http://cms.chtoma.com/api/students?page=${pagination.current}&limit=${pagination.pageSize}`,
+        {
+          headers: {
+            Authorization: "Bearer " + token,
+          },
+        }
       )
       .then((response) => console.log(response));
   };
   useEffect(() => {
-      fetchData({pagination}); 
+    fetchData({ pagination });
   }, []);
   return (
     <>
