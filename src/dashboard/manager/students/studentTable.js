@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import "antd/dist/antd.min.css";
-import { Button, Input, Space, Table } from "antd";
+import { Button, Input, message, Space, Table } from "antd";
 import { formatDistanceToNow } from "date-fns";
 import styled from "styled-components";
 import axios from "axios";
@@ -103,8 +103,8 @@ export default function StudentTable() {
   ];
 
   const fetchData = (params = {}) => {
-    const token = JSON.parse(localStorage.getItem("Data")).token;
     setLoading(true);
+    const token = JSON.parse(localStorage.getItem("Data")).token;
     axios
       .get(
         `http://cms.chtoma.com/api/students?page=${params.pagination.current}&limit=${params.pagination.pageSize}`,
@@ -123,7 +123,7 @@ export default function StudentTable() {
         });
       })
       .catch((error) => {
-        error.message("Cannot get students information!");
+        message.error("Cannot get students information!");
       });
   };
 
