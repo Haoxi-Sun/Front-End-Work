@@ -1,1 +1,2 @@
-* 老师您好，我所有主要的东西都做在./dashboard/manager里面了，麻烦您帮我查看一下，谢谢您！
+1. Please install the locale-compare package "npm i locale-compare".
+* 我用了localeCompare对学生姓名进行sort．

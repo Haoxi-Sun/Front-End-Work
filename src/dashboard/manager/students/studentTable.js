@@ -3,7 +3,6 @@ import "antd/dist/antd.min.css";
 import { Button, Input, Space, Table } from "antd";
 import { formatDistanceToNow } from "date-fns";
 import styled from "styled-components";
-import localeCompare from "locale-compare";
 import axios from "axios";
 
 const { Search } = Input;
@@ -96,8 +95,8 @@ export default function StudentTable() {
       dataIndex: "action",
       render: () => (
         <Space>
-          <a>Edit</a>
-          <a>Delete</a>
+          <a href="/#">Edit</a>
+          <a href="/#">Delete</a>
         </Space>
       ),
     },
@@ -108,7 +107,7 @@ export default function StudentTable() {
     setLoading(true);
     axios
       .get(
-        `http://cms.chtoma.com/api/students?page=${pagination.current}&limit=${pagination.pageSize}`,
+        `http://cms.chtoma.com/api/students?page=${params.pagination.current}&limit=${params.pagination.pageSize}`,
         {
           headers: {
             Authorization: "Bearer " + token,
@@ -122,19 +121,20 @@ export default function StudentTable() {
           ...params.pagination,
           total: res.data.data.total,
         });
+      })
+      .catch((error) => {
+        error.message("Cannot get students information!");
       });
   };
 
   useEffect(() => {
     fetchData({ pagination });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const handleTableChange = (newPagination, filters, sorter) => {
+  const handleTableChange = (newPagination) => {
     fetchData({
-      sortField: sorter.field,
-      sortOrder: sorter.order,
       pagination: newPagination,
-      ...filters,
     });
   };
 
