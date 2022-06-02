@@ -1,2 +1,1 @@
-1. Question 1
-* 想用axios 去get the student information from api, but 403.
+* 老师您好，我所有主要的东西都做在./dashboard/manager里面了，麻烦您帮我查看一下，谢谢您！

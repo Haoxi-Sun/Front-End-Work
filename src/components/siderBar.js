@@ -73,10 +73,10 @@ export default function SiderBar() {
     if (event.key === "1") {
       navigate(`../dashboard/manager`);
     } else if (event.key === "2") {
-      navigate(`../dashboard/manager/studentList`);
+      navigate(`../dashboard/manager/students`);
     }
   };
-  
+
   return (
     <>
       <LogoContainer>

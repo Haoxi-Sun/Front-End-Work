@@ -4,7 +4,6 @@ import SiderBar from "../../components/siderBar";
 import HeaderBar from "../../components/header";
 import { MenuUnfoldOutlined, MenuFoldOutlined } from "@ant-design/icons";
 import { Breadcrumb, Layout } from "antd";
-import styled from "styled-components";
 const { Header, Sider, Content } = Layout;
 
 export default function Manager() {
@@ -16,10 +15,16 @@ export default function Manager() {
         collapsible
         collapsed={collapsed}
         onCollapse={(value) => setCollapsed(value)}
+        style={{
+          overflow: "auto",
+          height: "100vh",
+          position: "sticky",
+          top: 0,
+          left: 0,
+        }}
       >
         <SiderBar />
       </Sider>
-
       <Layout className="site-layout">
         <Header
           style={{
@@ -27,6 +32,7 @@ export default function Manager() {
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
+            position: "sticky",
             zIndex: "10",
           }}
         >

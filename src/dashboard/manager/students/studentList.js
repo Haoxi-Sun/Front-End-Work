@@ -1,11 +1,10 @@
 import React, { useState } from "react";
 import "antd/dist/antd.min.css";
-import SiderBar from "../../components/siderBar";
-import HeaderBar from "../../components/header";
-import StudentTable from "../manager/studentTable";
+import SiderBar from "../../../components/siderBar";
+import HeaderBar from "../../../components/header";
+import StudentTable from "./studentTable";
 import { MenuUnfoldOutlined, MenuFoldOutlined } from "@ant-design/icons";
 import { Breadcrumb, Layout } from "antd";
-import styled from "styled-components";
 const { Header, Sider, Content } = Layout;
 
 export default function Manager() {
@@ -17,6 +16,13 @@ export default function Manager() {
         collapsible
         collapsed={collapsed}
         onCollapse={(value) => setCollapsed(value)}
+        style={{
+          overflow: "auto",
+          height: "100vh",
+          position: "sticky",
+          top: 0,
+          left: 0,
+        }}
       >
         <SiderBar />
       </Sider>
@@ -29,6 +35,7 @@ export default function Manager() {
             justifyContent: "space-between",
             alignItems: "center",
             zIndex: "10",
+            position: "sticky",
           }}
         >
           {React.createElement(
