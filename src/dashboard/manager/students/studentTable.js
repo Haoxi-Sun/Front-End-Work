@@ -81,7 +81,7 @@ export default function StudentTable() {
           value: "tester",
         },
       ],
-      render: (type) => type.name,
+      render: (type) => type?.name,
       onFilter: (value, record) => record.type.name.includes(value),
     },
     {
