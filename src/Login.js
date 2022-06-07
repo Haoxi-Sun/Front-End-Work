@@ -36,7 +36,7 @@ export default function Login() {
       .then((response) => {
         const data = response.data.data;
         localStorage.setItem("Data", JSON.stringify(data));
-        navigate(`dashboard/${data.role}`, { state: data });
+        navigate(`/dashboard/${data.role}`, {state: data});
       })
       .catch((error) => {
         message.error("Wrong Password!");

@@ -18,9 +18,11 @@ export default function StudentTable() {
   const [data, setData] = useState();
   const [loading, setLoading] = useState(false);
   const [pagination, setPagination] = useState({
+    // current: number pageSize: number;
     current: 1,
     pageSize: 10,
   });
+  const [total, setTotal] = useState(0);
 
   const columns = [
     {
@@ -102,12 +104,12 @@ export default function StudentTable() {
     },
   ];
 
-  const fetchData = (params = {}) => {
-    setLoading(true);
+  useEffect(() => {
     const token = JSON.parse(localStorage.getItem("Data")).token;
+    setLoading(true);
     axios
       .get(
-        `http://cms.chtoma.com/api/students?page=${params.pagination.current}&limit=${params.pagination.pageSize}`,
+        `http://cms.chtoma.com/api/students?page=${pagination.current}&limit=${pagination.pageSize}`,
         {
           headers: {
             Authorization: "Bearer " + token,
@@ -117,26 +119,12 @@ export default function StudentTable() {
       .then((res) => {
         setData(res.data.data.students);
         setLoading(false);
-        setPagination({
-          ...params.pagination,
-          total: res.data.data.total,
-        });
+        setTotal(res.data.data.total);
       })
       .catch((error) => {
         message.error("Cannot get students information!");
       });
-  };
-
-  useEffect(() => {
-    fetchData({ pagination });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  const handleTableChange = (newPagination) => {
-    fetchData({
-      pagination: newPagination,
-    });
-  };
+  }, [pagination]);
 
   return (
     <>
@@ -156,7 +144,9 @@ export default function StudentTable() {
         dataSource={data}
         pagination={pagination}
         loading={loading}
-        onChange={handleTableChange}
+        onChange={({ current, pageSize }) => {
+          setPagination({ current, pageSize });
+        }}
       />
     </>
   );

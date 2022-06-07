@@ -4,6 +4,9 @@ import SiderBar from "../../components/siderBar";
 import HeaderBar from "../../components/header";
 import { MenuUnfoldOutlined, MenuFoldOutlined } from "@ant-design/icons";
 import { Breadcrumb, Layout } from "antd";
+import { Route, Routes } from "react-router-dom";
+import StudentTable from "./students/index";
+
 const { Header, Sider, Content } = Layout;
 
 export default function Manager() {
@@ -57,7 +60,7 @@ export default function Manager() {
 
         <Breadcrumb style={{ margin: "0 16px", padding: "16px" }}>
           <Breadcrumb.Item>
-            <a href="../../dashboard/manager">CMS MANAGER SYSTEM</a>
+            <a href="./">CMS MANAGER SYSTEM</a>
           </Breadcrumb.Item>
           <Breadcrumb.Item>Overview</Breadcrumb.Item>
         </Breadcrumb>
@@ -68,7 +71,12 @@ export default function Manager() {
             minHeight: 280,
             background: "#fff",
           }}
-        ></Content>
+        >
+          <Routes>
+              <Route path="/"/>
+              <Route path="/students" element={<StudentTable />} />
+              </Routes>
+        </Content>
       </Layout>
     </Layout>
   );

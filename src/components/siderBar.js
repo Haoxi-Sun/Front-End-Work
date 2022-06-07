@@ -52,6 +52,7 @@ export default function SiderBar() {
       getItem(
         "Student List",
         "2",
+         // eslint-disable-next-line
         <a target="_blank" rel="noopener noreferrer">
           <TeamOutlined />
         </a>
@@ -71,9 +72,9 @@ export default function SiderBar() {
   const navigate = useNavigate();
   const handleMenuClick = (event) => {
     if (event.key === "1") {
-      navigate(`../dashboard/manager`);
+      navigate('./');
     } else if (event.key === "2") {
-      navigate(`../dashboard/manager/students`);
+      navigate('./students');
     }
   };
 
