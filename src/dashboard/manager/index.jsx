@@ -6,6 +6,7 @@ import { MenuUnfoldOutlined, MenuFoldOutlined } from "@ant-design/icons";
 import { Breadcrumb, Layout } from "antd";
 import { Route, Routes } from "react-router-dom";
 import StudentTable from "./students/index";
+import Overview from "./overview";
 
 const { Header, Sider, Content } = Layout;
 
@@ -73,9 +74,9 @@ export default function Manager() {
           }}
         >
           <Routes>
-              <Route path="/"/>
-              <Route path="/students" element={<StudentTable />} />
-              </Routes>
+            <Route path="/overview" element={<Overview />}/>
+            <Route path="/students" element={<StudentTable />} />
+          </Routes>
         </Content>
       </Layout>
     </Layout>

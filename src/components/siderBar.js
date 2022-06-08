@@ -72,7 +72,7 @@ export default function SiderBar() {
   const navigate = useNavigate();
   const handleMenuClick = (event) => {
     if (event.key === "1") {
-      navigate('./');
+      navigate('./overview');
     } else if (event.key === "2") {
       navigate('./students');
     }
