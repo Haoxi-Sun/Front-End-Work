@@ -1,21 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import "antd/dist/antd.min.css";
-import {
-  Button,
-  Input,
-  message,
-  Space,
-  Table,
-  Modal,
-  Form,
-  Select,
-  Popconfirm,
-} from "antd";
-import { formatDistanceToNow } from "date-fns";
+import { Button, Input, message, Space, Table, Popconfirm } from "antd";
+import { formatDistanceToNow, set } from "date-fns";
 import styled from "styled-components";
 import axios from "axios";
-
-const { Option } = Select;
+import StudentForm from "./studentForm";
+import _debounce from "lodash.debounce";
 
 const Search = styled(Input.Search)`
   width: 30%;
@@ -39,7 +29,13 @@ export default function StudentTable() {
   const [total, setTotal] = useState(0);
 
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const [form] = Form.useForm();
+  const [editValues, setEditValues] = useState();
+
+  const [query, setQuery] = useState("");
+  const debouncedQuery = useCallback(
+    _debounce(handleDebounceFunction, 500),
+    []
+  );
 
   const columns = [
     {
@@ -114,8 +110,14 @@ export default function StudentTable() {
       dataIndex: "action",
       render: (_, record) => (
         <Space>
-          <a href="/#">Edit</a>
-
+          <a
+            onClick={() => {
+              setEditValues(record);
+              setIsModalVisible(true);
+            }}
+          >
+            Edit
+          </a>
           <Popconfirm
             title="Are you sure to delete?"
             onConfirm={() => {
@@ -136,7 +138,7 @@ export default function StudentTable() {
                   }
                 })
                 .catch((error) => {
-                  message.error("Cannot delete this row!");
+                  message.error("Cannot delete this student!");
                 });
             }}
             okText="Confirm"
@@ -148,31 +150,6 @@ export default function StudentTable() {
       ),
     },
   ];
-
-  const handleAdd = (event) => {
-    event.preventDefault();
-    form
-      .validateFields()
-      .then((values) => {
-        console.log(values);
-        // axios
-        //   .post(
-        //     "http://cms.chtoma.com/api/students",
-        //     values,
-        //     {
-        //       headers: {
-        //         Authorization: "Bearer " + token,
-        //       },
-        //     }
-        //   )
-        //   .then((response) => {
-        //     console.log(response);
-        //   });
-      })
-      .catch((error) => {
-        message.error(error);
-      });
-  };
 
   useEffect(() => {
     const token = JSON.parse(localStorage.getItem("Data")).token;
@@ -186,47 +163,63 @@ export default function StudentTable() {
           },
         }
       )
-      .then((res) => {
-        setData(res.data.data.students);
+      .then((response) => {
+        setData(response.data.data.students);
         setLoading(false);
-        setTotal(res.data.data.total);
+        setTotal(response.data.data.total);
       })
       .catch((error) => {
         message.error("Cannot get students information!");
       });
   }, [pagination]);
 
+  function handleDebounceFunction(debounceValue) {
+    const token = JSON.parse(localStorage.getItem("Data")).token;
+    axios
+      .get(
+        `http://cms.chtoma.com/api/students?query=${debounceValue}&page=${pagination.current}&limit=${pagination.pageSize}`,
+        {
+          headers: {
+            Authorization: "Bearer " + token,
+          },
+        }
+      )
+      .then((response) => {
+        setData(response.data.data.students);
+      })
+      .catch((error) => {
+        message.error("Search Failed!");
+      });
+  }
 
-  const [filterInput, setFilterInput] = React.useState("");
-  const filterData = () => {
-    if (filterInput === "") return data;
-
-    if (isNaN(filterInput)) {
-      return data.filter(({ name }) => name.toLowerCase().includes(filterInput.toLowerCase()));
-    }
+  const handleChange = (event) => {
+    setQuery(event.target.value);
+    debouncedQuery(event.target.value);
   };
 
   return (
     <>
       <AddSearch>
-        <Button type="primary" onClick={() => setIsModalVisible(true)}>
+        <Button
+          type="primary"
+          onClick={() => {
+            setIsModalVisible(true);
+            setEditValues(undefined);
+          }}
+        >
           + Add
         </Button>
-        <Search
-          placeholder="Search by name"
-          onSearch={setFilterInput}
-          onChange={(e) => setFilterInput(e.target.value)}
-          style={{
-            width: "30%",
-            display: "block",
-          }}
-        />
+        <Search placeholder="Search by name" onChange={handleChange} />
       </AddSearch>
-
+      <StudentForm
+        isModalVisible={isModalVisible}
+        setIsModalVisible={setIsModalVisible}
+        value={editValues}
+      />
       <Table
         columns={columns}
         rowKey={"id"}
-        dataSource={filterData()}
+        dataSource={data}
         pagination={{
           total: total,
           current: pagination.current,
@@ -237,54 +230,6 @@ export default function StudentTable() {
           setPagination({ current, pageSize });
         }}
       />
-      <Modal
-        title="Add Student"
-        afterClose={() => form.resetFields()}
-        centered
-        visible={isModalVisible}
-        onCancel={() => setIsModalVisible(false)}
-      >
-        <Form
-          form={form}
-          labelCol={{
-            span: 6,
-          }}
-          wrapperCol={{
-            offset: 1,
-          }}
-          layout="horizontal"
-        >
-          <Form.Item label="Name" name="name" rules={[{ required: true }]}>
-            <Input />
-          </Form.Item>
-
-          <Form.Item
-            label="Email"
-            name="email"
-            rules={[{ required: true }, { type: "email" }]}
-          >
-            <Input />
-          </Form.Item>
-          <Form.Item label="Area" name="area" rules={[{ required: true }]}>
-            <Select>
-              <Option value="China">China</Option>
-              <Option value="New Zealand">New Zealand</Option>
-              <Option value="Canada">Canada</Option>
-              <Option value="Australia">Australia</Option>
-            </Select>
-          </Form.Item>
-          <Form.Item
-            label="Student Type"
-            name="type"
-            rules={[{ required: true }]}
-          >
-            <Select>
-              <Option value="1">Tester</Option>
-              <Option value="2">Developer</Option>
-            </Select>
-          </Form.Item>
-        </Form>
-      </Modal>
     </>
   );
 }

@@ -16,5 +16,6 @@ module.exports = {
     "react/jsx-uses-react": "error",
     "react/no-unescaped-entities": 0,
     "react/jsx-uses-vars": "error",
+    "react/prop-types": "off",
   },
 };

@@ -61,7 +61,7 @@ export default function Manager() {
 
         <Breadcrumb style={{ margin: "0 16px", padding: "16px" }}>
           <Breadcrumb.Item>
-            <a href="./">CMS MANAGER SYSTEM</a>
+            <a href="./overview">CMS MANAGER SYSTEM</a>
           </Breadcrumb.Item>
           <Breadcrumb.Item>Overview</Breadcrumb.Item>
         </Breadcrumb>
