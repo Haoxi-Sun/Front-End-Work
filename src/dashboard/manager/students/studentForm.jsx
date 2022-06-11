@@ -10,53 +10,55 @@ export default function StudentForm(props) {
   const isEdit = !!props.value;
 
   const addStudent = (values) => {
-        const token = JSON.parse(localStorage.getItem("Data")).token;
-        setIsLoading(true);
-        axios
-          .post("http://cms.chtoma.com/api/students", values, {
-            headers: {
-              Authorization: "Bearer " + token,
-            },
-          })
-          .then((response) => {
-            props.setIsModalVisible(false);
-            message.success("Success");
-          })
-          .catch((error) => {
-            message.error("Cannot add this student!");
-          }).finally(() => {
-            setIsLoading(false);
-          });
+    const token = JSON.parse(localStorage.getItem("Data")).token;
+    setIsLoading(true);
+    axios
+      .post("http://cms.chtoma.com/api/students", values, {
+        headers: {
+          Authorization: "Bearer " + token,
+        },
+      })
+      .then((response) => {
+        props.setIsModalVisible(false);
+        message.success("Success");
+      })
+      .catch((error) => {
+        message.error("Cannot add this student!");
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
   };
 
   const editStudent = (values) => {
-        const token = JSON.parse(localStorage.getItem("Data")).token;
-        setIsLoading(true);
-        axios
-          .put(
-            "http://cms.chtoma.com/api/students",
-            {
-              id: props.value.id,
-              name: values.name,
-              country: values.country,
-              type: values.type,
-              email: values.email,
-            },
-            {
-              headers: {
-                Authorization: "Bearer " + token,
-              },
-            }
-          )
-          .then((response) => {
-            props.setIsModalVisible(false);
-            message.success("Success");
-          })
-          .catch((error) => {
-            message.error("Cannot edit this student!");
-          }).finally(() => {
-            setIsLoading(false);
-          });
+    const token = JSON.parse(localStorage.getItem("Data")).token;
+    setIsLoading(true);
+    axios
+      .put(
+        "http://cms.chtoma.com/api/students",
+        {
+          id: props.value.id,
+          name: values.name,
+          country: values.country,
+          type: values.type,
+          email: values.email,
+        },
+        {
+          headers: {
+            Authorization: "Bearer " + token,
+          },
+        }
+      )
+      .then((response) => {
+        props.setIsModalVisible(false);
+        message.success("Success");
+      })
+      .catch((error) => {
+        message.error("Cannot edit this student!");
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
   };
   return (
     <>
@@ -64,20 +66,20 @@ export default function StudentForm(props) {
         title={isEdit ? "Edit Student" : "Add Student"}
         afterClose={() => form.resetFields()}
         centered
+        destroyOnClose
         onOk={() => {
           form.validateFields().then((params) => {
-            // const params = form.getFieldsValue();
             if (isEdit) {
-            editStudent(params);
-          } else {
-            addStudent({ ...props.value, ...params});
-          }
+              editStudent(params);
+            } else {
+              addStudent({ ...props.value, ...params });
+            }
           });
         }}
         okText={isEdit ? "Update" : "Add"}
         visible={props.isModalVisible}
         onCancel={() => props.setIsModalVisible(false)}
-        okButtonProps={{disabled : isLoading}}
+        okButtonProps={{ disabled: isLoading }}
       >
         <Form
           form={form}

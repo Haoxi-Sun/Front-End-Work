@@ -1,11 +1,13 @@
 import React, { useEffect, useState, useCallback } from "react";
+import { Route, Routes, Link } from "react-router-dom";
 import "antd/dist/antd.min.css";
 import { Button, Input, message, Space, Table, Popconfirm } from "antd";
-import { formatDistanceToNow, set } from "date-fns";
+import { formatDistanceToNow } from "date-fns";
 import styled from "styled-components";
 import axios from "axios";
 import StudentForm from "./studentForm";
 import _debounce from "lodash.debounce";
+import StudentID from "./studentID";
 
 const Search = styled(Input.Search)`
   width: 30%;
@@ -27,16 +29,16 @@ export default function StudentTable() {
     pageSize: 10,
   });
   const [total, setTotal] = useState(0);
-
+  
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [editValues, setEditValues] = useState();
 
   const [query, setQuery] = useState("");
   const debouncedQuery = useCallback(
-    _debounce(handleDebounceFunction, 500),
+    _debounce(handleDebounceFunction, 1000),
     []
   );
-
+  
   const columns = [
     {
       title: "No.",
@@ -46,8 +48,14 @@ export default function StudentTable() {
     {
       title: "Name",
       dataIndex: "name",
-      sorter: (prevStudent, nextStudent) =>
-        prevStudent.name.localeCompare(nextStudent.name),
+      sorter: (prevStudent, nextStudent) => {
+        prevStudent.name.localeCompare(nextStudent.name);
+      },
+      render: (_, record) => (
+        <Link to={`/dashboard/manager/students/${record.id}`}>
+          {record.name}
+        </Link>
+      ),
     },
     {
       title: "Area",

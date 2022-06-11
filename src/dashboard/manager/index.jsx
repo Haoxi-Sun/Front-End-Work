@@ -13,7 +13,7 @@ const { Header, Sider, Content } = Layout;
 export default function Manager() {
   const [collapsed, setCollapsed] = useState(false);
 
-  return (
+   return (
     <Layout style={{ minHeight: "100vh" }}>
       <Sider
         collapsible
@@ -64,6 +64,7 @@ export default function Manager() {
             <a href="./overview">CMS MANAGER SYSTEM</a>
           </Breadcrumb.Item>
           <Breadcrumb.Item>Overview</Breadcrumb.Item>
+          
         </Breadcrumb>
         <Content
           style={{
@@ -74,8 +75,8 @@ export default function Manager() {
           }}
         >
           <Routes>
-            <Route path="/overview" element={<Overview />}/>
-            <Route path="/students" element={<StudentTable />} />
+            <Route path="/overview" element={<Overview/>}/>
+            <Route path="/students" element={<StudentTable/>} />
           </Routes>
         </Content>
       </Layout>
