@@ -5,9 +5,9 @@ import { Button, Input, message, Space, Table, Popconfirm } from "antd";
 import { formatDistanceToNow } from "date-fns";
 import styled from "styled-components";
 import axios from "axios";
-import StudentForm from "./studentForm";
+import StudentForm from "../components/studentForm";
 import _debounce from "lodash.debounce";
-import StudentID from "./studentID";
+import StudentID from "./studentDetails";
 
 const Search = styled(Input.Search)`
   width: 30%;
@@ -35,7 +35,7 @@ export default function StudentTable() {
 
   const [query, setQuery] = useState("");
   const debouncedQuery = useCallback(
-    _debounce(handleDebounceFunction, 1000),
+    _debounce(handleDebounceFunction, 500),
     []
   );
   

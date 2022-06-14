@@ -1,13 +1,28 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "antd/dist/antd.min.css";
 import { Input, message, Modal, Form, Select } from "antd";
 import axios from "axios";
+import { useForm } from "antd/lib/form/Form";
 const { Option } = Select;
 
 export default function StudentForm(props) {
-  const [form] = Form.useForm();
+  const [form] = useForm();
+
   const [isLoading, setIsLoading] = useState(false);
   const isEdit = !!props.value;
+
+  useEffect(() => {
+    if (isEdit) {
+      form.setFieldsValue(props.value);
+    } else {
+      form.setFieldsValue({
+        name: "",
+        country: "",
+        email: "",
+        type: "",
+      });
+    }
+  }, [props.value]);
 
   const addStudent = (values) => {
     const token = JSON.parse(localStorage.getItem("Data")).token;
@@ -60,9 +75,11 @@ export default function StudentForm(props) {
         setIsLoading(false);
       });
   };
+
   return (
     <>
       <Modal
+        forceRender
         title={isEdit ? "Edit Student" : "Add Student"}
         afterClose={() => form.resetFields()}
         centered
@@ -78,7 +95,9 @@ export default function StudentForm(props) {
         }}
         okText={isEdit ? "Update" : "Add"}
         visible={props.isModalVisible}
-        onCancel={() => props.setIsModalVisible(false)}
+        onCancel={() => {
+          props.setIsModalVisible(false);
+        }}
         okButtonProps={{ disabled: isLoading }}
       >
         <Form

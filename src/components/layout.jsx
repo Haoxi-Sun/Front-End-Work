@@ -1,12 +1,12 @@
 import React, { useState } from "react";
 import "antd/dist/antd.min.css";
-import SiderBar from "../../components/siderBar";
-import HeaderBar from "../../components/header";
+import SiderBar from "./siderBar";
+import HeaderBar from "./header";
 import { MenuUnfoldOutlined, MenuFoldOutlined } from "@ant-design/icons";
 import { Breadcrumb, Layout } from "antd";
 import { Route, Routes } from "react-router-dom";
-import StudentTable from "./students/index";
-import Overview from "./overview";
+import StudentTable from "../pages/students";
+import Overview from "../pages/overview";
 
 const { Header, Sider, Content } = Layout;
 

@@ -6,8 +6,8 @@ import {
   Routes,
   Navigate,
 } from "react-router-dom";
-import Login from "./login";
-import Dashboard from "./dashboard/index";
+import Login from "./pages/login";
+import Layout from "./components/layout"
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
@@ -16,7 +16,7 @@ root.render(
       <Routes>
         <Route path="/" element={<Navigate to="/login" />}/>
         <Route path="/login" element={<Login />} />
-        <Route path="dashboard/*" element={<Dashboard />}/>
+        <Route path="dashboard/*" element={<Layout />}/>
         <Route path="*" element={<Navigate to="dashboard/" />} />
       </Routes>
     </Router>
