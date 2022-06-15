@@ -17,6 +17,7 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import { AES } from "crypto-js";
 import axios from "axios";
+import LOGIN from "../api/api";
 
 const Title = styled.h1`
   text-align: center;
@@ -25,23 +26,23 @@ const Title = styled.h1`
 
 export default function Login() {
   const [form] = Form.useForm();
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
 
-  const handleSubmit = async (event) => {
-    axios
-      .post("http://cms.chtoma.com/api/login", {
-        ...event,
-        password: AES.encrypt(event.password, "cms").toString(),
-      })
-      .then((response) => {
-        const data = response.data.data;
-        localStorage.setItem("Data", JSON.stringify(data));
-        navigate(`/dashboard/${data.role}`, { state: data });
-      })
-      .catch((error) => {
-        message.error("Wrong Password!");
-      });
-  };
+ // const handleSubmit = (event) => {
+    // axios
+    //   .post("http://cms.chtoma.com/api/login", {
+    //     ...event,
+    //     password: AES.encrypt(event.password, "cms").toString(),
+    //   })
+    //   .then((response) => {
+    //     const data = response.data.data;
+    //     localStorage.setItem("Data", JSON.stringify(data));
+    //     navigate(`/dashboard/${data.role}`, { state: data });
+    //   })
+    //   .catch((error) => {
+    //     message.error("Wrong Password!");
+    //   });
+ // };
 
   return (
     <>
@@ -55,7 +56,8 @@ export default function Login() {
               rememberMe: true,
               role: "student",
             }}
-            onFinish={handleSubmit}
+            //onFinish={handleSubmit}
+            onFinish={(event) => <LOGIN values={event} />}
           >
             <Form.Item name="role" rules={[{ required: true }]}>
               <Radio.Group>
