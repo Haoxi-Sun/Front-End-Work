@@ -1,15 +1,15 @@
 import React, { useEffect, useState } from "react";
 import "antd/dist/antd.min.css";
 import { Input, message, Modal, Form, Select } from "antd";
-import axios from "axios";
 import { useForm } from "antd/lib/form/Form";
+import { Add_StudentAPI, Edit_StudentAPI } from "../api/api";
+
 const { Option } = Select;
 
 export default function StudentForm(props) {
   const [form] = useForm();
-
-  const [isLoading, setIsLoading] = useState(false);
   const isEdit = !!props.value;
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     if (isEdit) {
@@ -25,55 +25,33 @@ export default function StudentForm(props) {
   }, [props.value]);
 
   const addStudent = (values) => {
-    const token = JSON.parse(localStorage.getItem("Data")).token;
     setIsLoading(true);
-    axios
-      .post("http://cms.chtoma.com/api/students", values, {
-        headers: {
-          Authorization: "Bearer " + token,
-        },
-      })
-      .then((response) => {
+    Add_StudentAPI(values)
+      .then((res) => {
         props.setIsModalVisible(false);
-        message.success("Success");
+        if (res) {
+          message.success("Success");
+        }
       })
-      .catch((error) => {
-        message.error("Cannot add this student!");
-      })
-      .finally(() => {
-        setIsLoading(false);
-      });
+      .finally(() => setIsLoading(false));
   };
 
   const editStudent = (values) => {
-    const token = JSON.parse(localStorage.getItem("Data")).token;
     setIsLoading(true);
-    axios
-      .put(
-        "http://cms.chtoma.com/api/students",
-        {
-          id: props.value.id,
-          name: values.name,
-          country: values.country,
-          type: values.type,
-          email: values.email,
-        },
-        {
-          headers: {
-            Authorization: "Bearer " + token,
-          },
-        }
-      )
-      .then((response) => {
+    Edit_StudentAPI({
+      id: props.value.id,
+      name: values.name,
+      country: values.country,
+      type: values.type,
+      email: values.email,
+    })
+      .then((res) => {
         props.setIsModalVisible(false);
-        message.success("Success");
+        if (res) {
+          message.success("Success");
+        }
       })
-      .catch((error) => {
-        message.error("Cannot edit this student!");
-      })
-      .finally(() => {
-        setIsLoading(false);
-      });
+      .finally(() => setIsLoading(false));
   };
 
   return (

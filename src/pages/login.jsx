@@ -10,14 +10,11 @@ import {
   Checkbox,
   Space,
   Typography,
-  message,
 } from "antd";
 import styled from "styled-components";
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { AES } from "crypto-js";
-import axios from "axios";
-import LOGIN from "../api/api";
+import { LoginAPI } from "../api/api";
 
 const Title = styled.h1`
   text-align: center;
@@ -26,23 +23,7 @@ const Title = styled.h1`
 
 export default function Login() {
   const [form] = Form.useForm();
-  // const navigate = useNavigate();
-
- // const handleSubmit = (event) => {
-    // axios
-    //   .post("http://cms.chtoma.com/api/login", {
-    //     ...event,
-    //     password: AES.encrypt(event.password, "cms").toString(),
-    //   })
-    //   .then((response) => {
-    //     const data = response.data.data;
-    //     localStorage.setItem("Data", JSON.stringify(data));
-    //     navigate(`/dashboard/${data.role}`, { state: data });
-    //   })
-    //   .catch((error) => {
-    //     message.error("Wrong Password!");
-    //   });
- // };
+  const navigate = useNavigate();
 
   return (
     <>
@@ -56,8 +37,14 @@ export default function Login() {
               rememberMe: true,
               role: "student",
             }}
-            //onFinish={handleSubmit}
-            onFinish={(event) => <LOGIN values={event} />}
+            onFinish={(values) => {
+              const result = LoginAPI(values);
+              result.then((res) => {
+                if (res) {
+                  navigate(`/dashboard/${res.role}`);
+                }
+              });
+            }}
           >
             <Form.Item name="role" rules={[{ required: true }]}>
               <Radio.Group>

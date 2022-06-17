@@ -8,6 +8,11 @@ import axios from "axios";
 import StudentForm from "../components/studentForm";
 import _debounce from "lodash.debounce";
 import StudentID from "./studentDetails";
+import {
+  Delete_StudentAPI,
+  Search_StudentAPI,
+  Show_StudentsAPI,
+} from "../api/api";
 
 const Search = styled(Input.Search)`
   width: 30%;
@@ -29,7 +34,7 @@ export default function StudentTable() {
     pageSize: 10,
   });
   const [total, setTotal] = useState(0);
-  
+
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [editValues, setEditValues] = useState();
 
@@ -38,7 +43,7 @@ export default function StudentTable() {
     _debounce(handleDebounceFunction, 500),
     []
   );
-  
+
   const columns = [
     {
       title: "No.",
@@ -129,25 +134,13 @@ export default function StudentTable() {
           <Popconfirm
             title="Are you sure to delete?"
             onConfirm={() => {
-              const token = JSON.parse(localStorage.getItem("Data")).token;
-              axios
-                .delete(`http://cms.chtoma.com/api/students/${record.id}`, {
-                  headers: {
-                    Authorization: "Bearer " + token,
-                  },
-                })
-                .then((response) => {
-                  if (response.data.data) {
-                    const newData = data.filter(
-                      (item) => item.id !== record.id
-                    );
-                    setData(newData);
-                    setTotal(total - 1);
-                  }
-                })
-                .catch((error) => {
-                  message.error("Cannot delete this student!");
-                });
+              Delete_StudentAPI(record.id).then((res) => {
+                if (res) {
+                  const newData = data.filter((item) => item.id !== record.id);
+                  setData(newData);
+                  setTotal(total - 1);
+                }
+              });
             }}
             okText="Confirm"
             cancelText="Cancel"
@@ -160,44 +153,22 @@ export default function StudentTable() {
   ];
 
   useEffect(() => {
-    const token = JSON.parse(localStorage.getItem("Data")).token;
     setLoading(true);
-    axios
-      .get(
-        `http://cms.chtoma.com/api/students?page=${pagination.current}&limit=${pagination.pageSize}`,
-        {
-          headers: {
-            Authorization: "Bearer " + token,
-          },
-        }
-      )
-      .then((response) => {
-        setData(response.data.data.students);
+    Show_StudentsAPI(pagination.current, pagination.pageSize).then((res) => {
+      if (res) {
+        setData(res.students);
+        setTotal(res.total);
         setLoading(false);
-        setTotal(response.data.data.total);
-      })
-      .catch((error) => {
-        message.error("Cannot get students information!");
-      });
+      }
+    });
   }, [pagination]);
 
   function handleDebounceFunction(debounceValue) {
-    const token = JSON.parse(localStorage.getItem("Data")).token;
-    axios
-      .get(
-        `http://cms.chtoma.com/api/students?query=${debounceValue}&page=${pagination.current}&limit=${pagination.pageSize}`,
-        {
-          headers: {
-            Authorization: "Bearer " + token,
-          },
-        }
-      )
-      .then((response) => {
-        setData(response.data.data.students);
-      })
-      .catch((error) => {
-        message.error("Search Failed!");
-      });
+    Search_StudentAPI(
+      debounceValue,
+      pagination.current,
+      pagination.pageSize
+    ).then((res) => setData(res.students));
   }
 
   const handleChange = (event) => {
