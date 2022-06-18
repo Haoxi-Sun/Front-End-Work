@@ -10,7 +10,6 @@ import _debounce from "lodash.debounce";
 import StudentID from "./studentDetails";
 import {
   deleteStudentApi,
-  searchStudentApi,
   showStudentsApi,
 } from "../api/api";
 

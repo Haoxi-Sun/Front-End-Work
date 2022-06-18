@@ -32,14 +32,6 @@ function deleteStudentApi(value) {
   });
 }
 
-function searchStudentApi(debounceValue, current, pageSize) {
-  return get(
-    `/students?query=${debounceValue}&page=${current}&limit=${pageSize}`
-  ).then((res) => {
-    return res.data;
-  });
-}
-
 function showStudentsApi(params) {
   return get("/students", params).then((res) => {
     return res.data;
@@ -51,6 +43,5 @@ export {
   addStudentApi,
   editStudentApi,
   deleteStudentApi,
-  searchStudentApi,
   showStudentsApi,
 };
