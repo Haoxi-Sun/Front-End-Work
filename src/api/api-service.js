@@ -49,12 +49,12 @@ function del(path) {
     });
 }
 
-function get(path) {
+function get(path, params) {
   const url = baseURL + path;
   return axiosInstance
-    .get(url)
+    .get(url, {params: params})
     .then((res) => res.data)
-    .catch((err) => {
+    .catch((error) => {
       message.error(error.response.data.msg);
       return error;
     });

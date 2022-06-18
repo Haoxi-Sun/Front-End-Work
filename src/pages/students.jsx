@@ -9,9 +9,9 @@ import StudentForm from "../components/studentForm";
 import _debounce from "lodash.debounce";
 import StudentID from "./studentDetails";
 import {
-  Delete_StudentAPI,
-  Search_StudentAPI,
-  Show_StudentsAPI,
+  deleteStudentApi,
+  searchStudentApi,
+  showStudentsApi,
 } from "../api/api";
 
 const Search = styled(Input.Search)`
@@ -134,7 +134,7 @@ export default function StudentTable() {
           <Popconfirm
             title="Are you sure to delete?"
             onConfirm={() => {
-              Delete_StudentAPI(record.id).then((res) => {
+              deleteStudentApi(record.id).then((res) => {
                 if (res) {
                   const newData = data.filter((item) => item.id !== record.id);
                   setData(newData);
@@ -154,7 +154,10 @@ export default function StudentTable() {
 
   useEffect(() => {
     setLoading(true);
-    Show_StudentsAPI(pagination.current, pagination.pageSize).then((res) => {
+    showStudentsApi({
+      page: pagination.current,
+      limit: pagination.pageSize,
+    }).then((res) => {
       if (res) {
         setData(res.students);
         setTotal(res.total);
@@ -164,11 +167,11 @@ export default function StudentTable() {
   }, [pagination]);
 
   function handleDebounceFunction(debounceValue) {
-    Search_StudentAPI(
-      debounceValue,
-      pagination.current,
-      pagination.pageSize
-    ).then((res) => setData(res.students));
+    showStudentsApi({
+      query: debounceValue,
+      page: pagination.current,
+      limit: pagination.pageSize,
+    }).then((res) => setData(res.students));
   }
 
   const handleChange = (event) => {

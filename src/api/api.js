@@ -1,7 +1,7 @@
 import { post, put, del, get } from "./api-service";
 import { AES } from "crypto-js";
 
-function LoginAPI(values) {
+function loginApi(values) {
   const { password } = values;
   const pwd = AES.encrypt(values.password, "cms").toString();
 
@@ -14,25 +14,25 @@ function LoginAPI(values) {
   });
 }
 
-function Add_StudentAPI(values) {
+function addStudentApi(values) {
   return post("/students", values).then((res) => {
     return res.data;
   });
 }
 
-function Edit_StudentAPI(values) {
+function editStudentApi(values) {
   return put("/students", values).then((res) => {
     return res.data;
   });
 }
 
-function Delete_StudentAPI(value) {
+function deleteStudentApi(value) {
   return del(`/students/${value}`).then((res) => {
     return res.data;
   });
 }
 
-function Search_StudentAPI(debounceValue, current, pageSize) {
+function searchStudentApi(debounceValue, current, pageSize) {
   return get(
     `/students?query=${debounceValue}&page=${current}&limit=${pageSize}`
   ).then((res) => {
@@ -40,17 +40,17 @@ function Search_StudentAPI(debounceValue, current, pageSize) {
   });
 }
 
-function Show_StudentsAPI(current, pageSize) {
-  return get(`/students?page=${current}&limit=${pageSize}`).then((res) => {
+function showStudentsApi(params) {
+  return get("/students", params).then((res) => {
     return res.data;
   });
 }
 
 export {
-  LoginAPI,
-  Add_StudentAPI,
-  Edit_StudentAPI,
-  Delete_StudentAPI,
-  Search_StudentAPI,
-  Show_StudentsAPI,
+  loginApi,
+  addStudentApi,
+  editStudentApi,
+  deleteStudentApi,
+  searchStudentApi,
+  showStudentsApi,
 };
