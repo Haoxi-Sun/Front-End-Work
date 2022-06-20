@@ -38,10 +38,17 @@ function showStudentsApi(params) {
   });
 }
 
+function showStudentDetails(value) {
+  return get(`/students/${value}`, {}).then((res) => {
+    return res.data;
+  });
+}
+
 export {
   loginApi,
   addStudentApi,
   editStudentApi,
   deleteStudentApi,
   showStudentsApi,
+  showStudentDetails
 };

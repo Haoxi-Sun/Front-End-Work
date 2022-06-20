@@ -7,10 +7,11 @@ import { Breadcrumb, Layout } from "antd";
 import { Route, Routes } from "react-router-dom";
 import StudentTable from "../pages/students";
 import Overview from "../pages/overview";
+import StudentDetails from "../pages/studentDetails";
 
 const { Header, Sider, Content } = Layout;
 
-export default function Manager() {
+export default function DashLayout() {
   const [collapsed, setCollapsed] = useState(false);
 
    return (
@@ -77,6 +78,7 @@ export default function Manager() {
           <Routes>
             <Route path="/overview" element={<Overview/>}/>
             <Route path="/students" element={<StudentTable/>} />
+            <Route path="/students/:id" element={<StudentDetails/>}/>
           </Routes>
         </Content>
       </Layout>

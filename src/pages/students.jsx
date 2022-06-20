@@ -7,7 +7,7 @@ import styled from "styled-components";
 import axios from "axios";
 import StudentForm from "../components/studentForm";
 import _debounce from "lodash.debounce";
-import StudentID from "./studentDetails";
+import StudentDetails from "./studentDetails";
 import {
   deleteStudentApi,
   showStudentsApi,
@@ -56,7 +56,7 @@ export default function StudentTable() {
         prevStudent.name.localeCompare(nextStudent.name);
       },
       render: (_, record) => (
-        <Link to={`/dashboard/manager/students/${record.id}`}>
+        <Link to={`${record.id}`}>
           {record.name}
         </Link>
       ),
