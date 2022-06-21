@@ -4,7 +4,7 @@ import SiderBar from "./siderBar";
 import HeaderBar from "./header";
 import { MenuUnfoldOutlined, MenuFoldOutlined } from "@ant-design/icons";
 import { Breadcrumb, Layout } from "antd";
-import { Route, Routes } from "react-router-dom";
+import { Route, Routes, useLocation } from "react-router-dom";
 import StudentTable from "../pages/students";
 import Overview from "../pages/overview";
 import StudentDetails from "../pages/studentDetails";
@@ -13,6 +13,10 @@ const { Header, Sider, Content } = Layout;
 
 export default function DashLayout() {
   const [collapsed, setCollapsed] = useState(false);
+
+  const location = useLocation();
+  const path = location.pathname;
+  console.log(path);
 
    return (
     <Layout style={{ minHeight: "100vh" }}>

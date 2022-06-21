@@ -1,7 +1,7 @@
 import { post, put, del, get } from "./api-service";
 import { AES } from "crypto-js";
 
-function loginApi(values) {
+function login(values) {
   const { password } = values;
   const pwd = AES.encrypt(values.password, "cms").toString();
 
@@ -14,25 +14,25 @@ function loginApi(values) {
   });
 }
 
-function addStudentApi(values) {
+function addStudent(values) {
   return post("/students", values).then((res) => {
     return res.data;
   });
 }
 
-function editStudentApi(values) {
+function editStudent(values) {
   return put("/students", values).then((res) => {
     return res.data;
   });
 }
 
-function deleteStudentApi(value) {
+function deleteStudent(value) {
   return del(`/students/${value}`).then((res) => {
     return res.data;
   });
 }
 
-function showStudentsApi(params) {
+function showStudents(params) {
   return get("/students", params).then((res) => {
     return res.data;
   });
@@ -45,10 +45,10 @@ function showStudentDetails(value) {
 }
 
 export {
-  loginApi,
-  addStudentApi,
-  editStudentApi,
-  deleteStudentApi,
-  showStudentsApi,
+  login,
+  addStudent,
+  editStudent,
+  deleteStudent,
+  showStudents,
   showStudentDetails
 };

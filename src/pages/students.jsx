@@ -4,13 +4,12 @@ import "antd/dist/antd.min.css";
 import { Button, Input, message, Space, Table, Popconfirm } from "antd";
 import { formatDistanceToNow } from "date-fns";
 import styled from "styled-components";
-import axios from "axios";
 import StudentForm from "../components/studentForm";
 import _debounce from "lodash.debounce";
 import StudentDetails from "./studentDetails";
 import {
-  deleteStudentApi,
-  showStudentsApi,
+  deleteStudent,
+  showStudents,
 } from "../api/api";
 
 const Search = styled(Input.Search)`
@@ -133,7 +132,7 @@ export default function StudentTable() {
           <Popconfirm
             title="Are you sure to delete?"
             onConfirm={() => {
-              deleteStudentApi(record.id).then((res) => {
+              deleteStudent(record.id).then((res) => {
                 if (res) {
                   const newData = data.filter((item) => item.id !== record.id);
                   setData(newData);
@@ -153,7 +152,7 @@ export default function StudentTable() {
 
   useEffect(() => {
     setLoading(true);
-    showStudentsApi({
+    showStudents({
       page: pagination.current,
       limit: pagination.pageSize,
     }).then((res) => {
@@ -166,7 +165,7 @@ export default function StudentTable() {
   }, [pagination]);
 
   function handleDebounceFunction(debounceValue) {
-    showStudentsApi({
+    showStudents({
       query: debounceValue,
       page: pagination.current,
       limit: pagination.pageSize,

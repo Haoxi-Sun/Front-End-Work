@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import "antd/dist/antd.min.css";
 import { Input, message, Modal, Form, Select } from "antd";
 import { useForm } from "antd/lib/form/Form";
-import { addStudentApi, editStudentApi } from "../api/api";
+import { addStudent, editStudent } from "../api/api";
 
 const { Option } = Select;
 
@@ -24,9 +24,9 @@ export default function StudentForm(props) {
     }
   }, [props.value]);
 
-  const addStudent = (values) => {
+  const addOne = (values) => {
     setIsLoading(true);
-    addStudentApi(values)
+    addStudent(values)
       .then((res) => {
         props.setIsModalVisible(false);
         if (res) {
@@ -36,9 +36,9 @@ export default function StudentForm(props) {
       .finally(() => setIsLoading(false));
   };
 
-  const editStudent = (values) => {
+  const editOne = (values) => {
     setIsLoading(true);
-    editStudentApi({
+    editStudent({
       id: props.value.id,
       name: values.name,
       country: values.country,
@@ -65,9 +65,9 @@ export default function StudentForm(props) {
         onOk={() => {
           form.validateFields().then((params) => {
             if (isEdit) {
-              editStudent(params);
+              editOne(params);
             } else {
-              addStudent({ ...props.value, ...params });
+              addOne({ ...props.value, ...params });
             }
           });
         }}

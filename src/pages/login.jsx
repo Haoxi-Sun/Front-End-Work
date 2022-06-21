@@ -14,7 +14,7 @@ import {
 import styled from "styled-components";
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { loginApi } from "../api/api";
+import { login } from "../api/api";
 
 const Title = styled.h1`
   text-align: center;
@@ -38,7 +38,7 @@ export default function Login() {
               role: "student",
             }}
             onFinish={(values) => {
-              const result = loginApi(values);
+              const result = login(values);
               result.then((res) => {
                 if (res) {
                   navigate(`/dashboard/${res.role}`);
