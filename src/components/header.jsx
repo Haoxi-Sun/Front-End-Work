@@ -5,7 +5,7 @@ import { Avatar, Badge, Dropdown, Menu, message, Row } from "antd";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-
+import { logout } from "../api/api";
 const HeaderIcons = styled.span`
   font-size: 18px;
   color: rgb(255, 255, 255);
@@ -16,24 +16,11 @@ const HeaderIcons = styled.span`
 export default function HeaderBar() {
   const navigate = useNavigate();
   const handleClick = () => {
-    const token = JSON.parse(localStorage.getItem("Data")).token;
-    axios
-      .post(
-        "http://cms.chtoma.com/api/logout",
-        {},
-        {
-          headers: {
-            Authorization: "Bearer " + token,
-          },
-        }
-      )
-      .then((_) => {
-        localStorage.clear("Data");
+    logout().then((res) => {
+      if (res) {
         navigate("/");
-      })
-      .catch((error) => {
-        message.error("Error!");
-      });
+      }
+    });
   };
 
   const logout_menu = (

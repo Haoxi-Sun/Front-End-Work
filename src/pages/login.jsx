@@ -41,7 +41,11 @@ export default function Login() {
               const result = login(values);
               result.then((res) => {
                 if (res) {
-                  navigate(`/dashboard/${res.role}`);
+                  if (res.role === "manager") {
+                    navigate("/dashboard/overview");
+                  } else {
+                    navigate(`/dashboard/${res.role}`);
+                  }
                 }
               });
             }}

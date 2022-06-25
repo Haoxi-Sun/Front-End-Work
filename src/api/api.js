@@ -1,5 +1,6 @@
 import { post, put, del, get } from "./api-service";
 import { AES } from "crypto-js";
+import {Navigate} from "react-router-dom";
 
 function login(values) {
   const { password } = values;
@@ -14,6 +15,12 @@ function login(values) {
   });
 }
 
+function logout(){
+   return post("/logout", {}).then(res => {
+    localStorage.clear("Data");
+    return res.data;
+   })
+}
 function addStudent(values) {
   return post("/students", values).then((res) => {
     return res.data;
@@ -51,6 +58,7 @@ function displayOverview() {
 }
 export {
   login,
+  logout,
   addStudent,
   editStudent,
   deleteStudent,

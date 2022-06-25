@@ -40,7 +40,7 @@ const iconStyle = {
 
 const bgColor = { color: "#fff" };
 
-function OverviewStat(data, title, icon, style) {
+function OverviewCard({ data, title, style, icon }) {
   const formatFloor = (num1, num2) => {
     const formatedNum = Number((num1 / num2) * 100).toFixed(1);
     return formatedNum;
@@ -51,33 +51,25 @@ function OverviewStat(data, title, icon, style) {
       <Row>
         <StatisticCardIcon span={6}>{icon}</StatisticCardIcon>
         <Col span={18} style={bgColor}>
-          <h3 style={bgColor}>Student</h3>
-          <h2 style={bgColor}>{data.data?.total}</h2>
+          <h3 style={bgColor}>{title}</h3>
+          <h2 style={bgColor}>{data?.total}</h2>
           <Progress
             showInfo={false}
             size="small"
             strokeColor="white"
             trailColor="lightgreen"
-            percent={
-              100 - formatFloor(data.data?.lastMonthAdded, data.data?.total)
-            }
+            percent={100 - formatFloor(data?.lastMonthAdded, data?.total)}
           />
           <p>{`${
-            formatFloor(data.data?.lastMonthAdded, data.data?.total) + "%"
+            formatFloor(data?.lastMonthAdded, data?.total) + "%"
           } Increase in 30 Days`}</p>
         </Col>
       </Row>
     </StatisticCard>
   );
 }
-
 export default function Overview() {
   const [overview, setOverview] = useState();
-
-  const formatFloor = (num1, num2) => {
-    const formatedNum = Number((num1 / num2) * 100).toFixed(1);
-    return formatedNum;
-  };
 
   useEffect(() => {
     displayOverview().then((res) => {
@@ -91,100 +83,28 @@ export default function Overview() {
     <>
       <Row style={statisticRow} align="middle">
         <Col span={8} style={statisticCol}>
-          <StatisticCard bordered style={{ background: "#1890ff" }}>
-            <Row>
-              <StatisticCardIcon span={6}>
-                <SolutionOutlined style={iconStyle} />
-              </StatisticCardIcon>
-              <Col span={18} style={bgColor}>
-                <h3 style={bgColor}>TOTAL STUDENTS</h3>
-                <h2 style={bgColor}>{overview?.student?.total}</h2>
-                <Progress
-                  showInfo={false}
-                  size="small"
-                  strokeColor="white"
-                  trailColor="lightgreen"
-                  percent={
-                    100 -
-                    formatFloor(
-                      overview?.student?.lastMonthAdded,
-                      overview?.student?.total
-                    )
-                  }
-                />
-                <p>{`${
-                  formatFloor(
-                    overview?.student?.lastMonthAdded,
-                    overview?.student?.total
-                  ) + "%"
-                } Increase in 30 Days`}</p>
-              </Col>
-            </Row>
-          </StatisticCard>
+          <OverviewCard
+            title="TOTAL STUDENTS"
+            data={overview?.student}
+            style={{ background: "#1890ff" }}
+            icon={<SolutionOutlined style={iconStyle} />}
+          />
         </Col>
         <Col span={8} style={statisticCol}>
-          <StatisticCard bordered style={{ background: "#673bb7" }}>
-            <Row>
-              <StatisticCardIcon span={6}>
-                <DeploymentUnitOutlined style={iconStyle} />
-              </StatisticCardIcon>
-              <Col span={18} style={bgColor}>
-                <h3 style={bgColor}>TOTAL TEACHERS</h3>
-                <h2 style={bgColor}>{overview?.teacher?.total}</h2>
-                <Progress
-                  showInfo={false}
-                  size="small"
-                  strokeColor="white"
-                  trailColor="lightgreen"
-                  percent={
-                    100 -
-                    formatFloor(
-                      overview?.teacher?.lastMonthAdded,
-                      overview?.teacher?.total
-                    )
-                  }
-                />
-                <p>{`${
-                  formatFloor(
-                    overview?.teacher?.lastMonthAdded,
-                    overview?.teacher?.total
-                  ) + "%"
-                } Increase in 30 Days`}</p>
-              </Col>
-            </Row>
-          </StatisticCard>
+          <OverviewCard
+            title="TOTAL TEACHERS"
+            data={overview?.teacher}
+            style={{ background: "#673bb7" }}
+            icon={<DeploymentUnitOutlined style={iconStyle} />}
+          />
         </Col>
         <Col span={8} style={statisticCol}>
-          <StatisticCard bordered style={{ background: "#ffaa16" }}>
-            <Row>
-              <StatisticCardIcon span={6}>
-                <ReadOutlined style={iconStyle} />
-              </StatisticCardIcon>
-              <Col span={18} style={bgColor}>
-                <h3 style={bgColor}>TOTAL COURSES</h3>
-                <h2 style={bgColor}>{overview?.course?.total}</h2>
-                <Progress
-                  showInfo={false}
-                  size="small"
-                  strokeColor="white"
-                  trailColor="lightgreen"
-                  percent={
-                    100 -
-                    formatFloor(
-                      overview?.course?.lastMonthAdded,
-                      overview?.course?.total
-                    )
-                  }
-                />
-                <p>{`${
-                  formatFloor(
-                    overview?.course?.lastMonthAdded,
-                    overview?.course?.total
-                  ) + "%"
-                } Increase in 30 Days`}</p>
-              </Col>
-            </Row>
-          </StatisticCard>
+          <OverviewCard
+            title="TOTAL COURSES"
+            data={overview?.course}
+            style={{ background: "#ffaa16" }}
+            icon={<ReadOutlined style={iconStyle} />}
+          />
         </Col>
       </Row>
     </>

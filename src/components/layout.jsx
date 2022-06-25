@@ -98,31 +98,14 @@ export default function DashLayout() {
       </SiderStyle>
       <Layout className="site-layout">
         <HeaderStyle>
-          {/* {React.createElement(
-            collapsed ? MenuUnfoldOutlined : MenuFoldOutlined,
-            {
-              style: {
-                padding: "0 24px",
-                fontSize: "18px",
-                lineHeight: "64px",
-                cursor: "pointer",
-                transition: "color 0.3s",
-                color: "#fff",
-              },
-              onMouseOver: (event) => (event.target.style.color = "#1890ff"),
-              onMouseOut: (event) => (event.target.style.color = "#fff"),
-              onClick: () => setCollapsed(!collapsed),
-            }
-          )}
-         */}
           <CollapsedStyle
-            onClick={() => setCollapsed(!collapsed)}
+            onClick={() => {
+              setCollapsed(!collapsed);
+            }}
             onMouseOver={(event) => (event.target.style.color = "#1890ff")}
             onMouseOut={(event) => (event.target.style.color = "#fff")}
           >
-            {React.createElement(
-              collapsed ? MenuUnfoldOutlined : MenuFoldOutlined
-            )}
+            {collapsed ? <MenuFoldOutlined /> : <MenuFoldOutlined />}
           </CollapsedStyle>
 
           <HeaderBar />
