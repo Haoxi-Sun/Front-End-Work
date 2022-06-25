@@ -1,16 +1,12 @@
 import React, { useEffect, useState, useCallback } from "react";
-import { Route, Routes, Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 import "antd/dist/antd.min.css";
-import { Button, Input, message, Space, Table, Popconfirm } from "antd";
+import { Button, Input, Space, Table, Popconfirm } from "antd";
 import { formatDistanceToNow } from "date-fns";
 import styled from "styled-components";
 import StudentForm from "../components/studentForm";
 import _debounce from "lodash.debounce";
-import StudentDetails from "./studentDetails";
-import {
-  deleteStudent,
-  showStudents,
-} from "../api/api";
+import { deleteStudent, showStudents } from "../api/api";
 
 const Search = styled(Input.Search)`
   width: 30%;
@@ -54,11 +50,7 @@ export default function StudentTable() {
       sorter: (prevStudent, nextStudent) => {
         prevStudent.name.localeCompare(nextStudent.name);
       },
-      render: (_, record) => (
-        <Link to={`${record.id}`}>
-          {record.name}
-        </Link>
-      ),
+      render: (_, record) => <Link to={`${record.id}`}>{record.name}</Link>,
     },
     {
       title: "Area",

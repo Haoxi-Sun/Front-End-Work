@@ -44,11 +44,17 @@ function showStudentDetails(value) {
   });
 }
 
+function displayOverview() {
+  return get("/statistics/overview").then((res) => {
+    return res.data;
+  });
+}
 export {
   login,
   addStudent,
   editStudent,
   deleteStudent,
   showStudents,
-  showStudentDetails
+  showStudentDetails,
+  displayOverview,
 };
