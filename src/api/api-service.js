@@ -16,7 +16,7 @@ axiosInstance.interceptors.request.use((config) => {
   return config;
 });
 
-function post(path, params) {
+async function post(path, params) {
   const url = baseURL + path;
   return axiosInstance
     .post(url, params)
@@ -27,7 +27,7 @@ function post(path, params) {
     });
 }
 
-function put(path, params) {
+async function put(path, params) {
   const url = baseURL + path;
   return axiosInstance
     .put(url, params)
@@ -38,7 +38,7 @@ function put(path, params) {
     });
 }
 
-function del(path) {
+async function del(path) {
   const url = baseURL + path;
   return axiosInstance
     .delete(url)
@@ -49,7 +49,7 @@ function del(path) {
     });
 }
 
-function get(path, params) {
+async function get(path, params) {
   const url = baseURL + path;
   return axiosInstance
     .get(url, {params: params})

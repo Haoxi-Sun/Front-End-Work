@@ -1,6 +1,6 @@
 import { post, put, del, get } from "./api-service";
 import { AES } from "crypto-js";
-import {Navigate} from "react-router-dom";
+import axios from "axios";
 
 function login(values) {
   const { password } = values;
@@ -56,6 +56,17 @@ function displayOverview() {
     return res.data;
   });
 }
+
+function getStatistics(type){
+  return get(`/statistics/${type}`, {}).then(res => {
+    return res.data;
+  });
+}
+
+async function getWorld(){
+  return await axios.get("https://code.highcharts.com/mapdata/custom/world-palestine-highres.geo.json");
+}
+
 export {
   login,
   logout,
@@ -65,4 +76,6 @@ export {
   showStudents,
   showStudentDetails,
   displayOverview,
+  getStatistics,
+  getWorld,
 };
