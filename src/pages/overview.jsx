@@ -233,12 +233,12 @@ export default function Overview() {
         </Col>
         <Col span={12} style={dataCol}>
           <Card bordered title="Languages">
-            {/* <LanguagesBarChart
+            <LanguagesBarChart
               data={{
                 student: studentStatistics?.interest,
                 teacher: teacherStatistics?.skills,
               }}
-            /> */}
+            />
           </Card>
         </Col>
       </Row>

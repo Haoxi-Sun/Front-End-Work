@@ -99,7 +99,8 @@ export default function CourseHeat({ data }) {
 
   useEffect(() => {
     if (!data) return;
-    const yCategories = data.map((items) => items.name).concat("TOTAL");
+    const yCategories = data.map((items) => items.name);
+    yCategories.push("Total");
 
     const rowData = data.map((items) => {
       const countCourse = new Array(8);
@@ -126,7 +127,6 @@ export default function CourseHeat({ data }) {
     });
 
     const sourceData = rowData.map((columnAry, index) => {
-        console.log(columnAry);
         const result = [];
         let i = 0;
         for (i = 0; i<columnAry.length; i++){
@@ -135,7 +135,6 @@ export default function CourseHeat({ data }) {
         } 
         return result;
     }).flat();
-
     console.log(sourceData);
     setOptions({
       yAxis: {

@@ -107,8 +107,10 @@ export default function LanguagesBarChart({ data }) {
           teacher[item]?.find((element) => element.level === level)?.amount || 0
       ),
       stack: "teacher",
+      stacking: "normal",
     }));
-
+    console.log("studentBar",studentBar);
+    console.log("teacherBar",teacherBar);
     setOptions({
       xAxis: {
         type: "category",
