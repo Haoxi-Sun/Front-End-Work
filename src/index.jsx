@@ -7,16 +7,16 @@ import {
   Navigate,
 } from "react-router-dom";
 import Login from "./pages/login";
-import Layout from "./components/layout"
+import Layout from "./components/layout";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
     <Router>
       <Routes>
-        <Route path="/" element={<Navigate to="/login" />}/>
+        <Route path="/" element={<Navigate to="/login" />} />
         <Route path="/login" element={<Login />} />
-        <Route path="dashboard/*" element={<Layout />}/>
+        <Route path="dashboard/*" element={<Layout />} />
         <Route path="*" element={<Navigate to="dashboard/" />} />
       </Routes>
     </Router>

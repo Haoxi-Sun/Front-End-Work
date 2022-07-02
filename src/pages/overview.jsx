@@ -11,6 +11,8 @@ import { displayOverview, getStatistics } from "../api/api";
 import Distribution from "../components/distribution";
 import Pie from "../components/pieChart";
 import Increment from "../components/increment";
+import LanguagesBarChart from "../components/luanguageBarChart";
+import CourseHeat from "../components/courseHeat";
 
 const { Option } = Select;
 const statisticRow = {
@@ -44,6 +46,13 @@ const StatisticCardIcon = styled(Col)`
   font-size: 32px;
 `;
 
+const dataRow = {
+  margin: "-8px -3px 8px",
+};
+
+const dataCol = {
+  padding: "8px 3px",
+};
 function OverviewCard({ data, title, style, icon }) {
   const formatFloor = (num1, num2) => {
     const formatedNum = Number((num1 / num2) * 100).toFixed(1);
@@ -72,6 +81,7 @@ function OverviewCard({ data, title, style, icon }) {
     </StatisticCard>
   );
 }
+
 export default function Overview() {
   const [overview, setOverview] = useState();
   const [studentStatistics, setStudentStatistics] = useState();
@@ -79,6 +89,7 @@ export default function Overview() {
   const [courseStatistics, setCourseStatistics] = useState();
   const [distributionTitle, setDistributionTitle] = useState("student");
   const [typeTitle, setTypeTitle] = useState("studentType");
+
   useEffect(() => {
     displayOverview().then((res) => {
       if (res) {
@@ -105,7 +116,7 @@ export default function Overview() {
 
   return (
     <>
-      <Row style={statisticRow} align="middle">
+      <Row align="middle" style={statisticRow}>
         <Col span={8} style={statisticCol}>
           <OverviewCard
             title="TOTAL STUDENTS"
@@ -131,8 +142,8 @@ export default function Overview() {
           />
         </Col>
       </Row>
-      <Row gutter={[8, 16]}>
-        <Col span={12}>
+      <Row style={dataRow}>
+        <Col span={12} style={dataCol}>
           <Card
             bordered
             title="Distribution"
@@ -140,7 +151,9 @@ export default function Overview() {
               <Select
                 defaultValue="Student"
                 bordered={false}
-                onChange={(value) => setDistributionTitle(value)}
+                onChange={(value) => {
+                  setDistributionTitle(value);
+                }}
               >
                 <Option value="student">Student</Option>
                 <Option value="teacher">Teacher</Option>
@@ -157,7 +170,7 @@ export default function Overview() {
             />
           </Card>
         </Col>
-        <Col span={12}>
+        <Col span={12} style={dataCol}>
           <Card
             bordered
             title="Types"
@@ -182,7 +195,7 @@ export default function Overview() {
                 <Col span={12}>
                   <Pie
                     title="student gender"
-                    data={Object.entries(overview.student.gender).map(
+                    data={Object.entries(overview?.student?.gender).map(
                       ([name, amount]) => ({
                         name,
                         amount,
@@ -193,7 +206,7 @@ export default function Overview() {
                 <Col span={12}>
                   <Pie
                     title="teacher gender"
-                    data={Object.entries(overview.teacher.gender).map(
+                    data={Object.entries(overview?.teacher?.gender).map(
                       ([name, amount]) => ({
                         name,
                         amount,
@@ -206,8 +219,8 @@ export default function Overview() {
           </Card>
         </Col>
       </Row>
-      <Row gutter={[8, 16]}>
-        <Col span={12}>
+      <Row style={dataRow}>
+        <Col span={12} style={dataCol}>
           <Card bordered title="Increment">
             <Increment
               data={{
@@ -218,9 +231,23 @@ export default function Overview() {
             />
           </Card>
         </Col>
-        <Col span={12}>
-          <Card bordered title="Languages"></Card>
+        <Col span={12} style={dataCol}>
+          <Card bordered title="Languages">
+            {/* <LanguagesBarChart
+              data={{
+                student: studentStatistics?.interest,
+                teacher: teacherStatistics?.skills,
+              }}
+            /> */}
+          </Card>
         </Col>
+      </Row>
+      <Row style={dataRow}>
+            <Col span={24} style={dataCol}>
+              <Card bordered title="Course Schedule">
+              <CourseHeat data={courseStatistics?.classTime} />
+              </Card>
+            </Col>
       </Row>
     </>
   );

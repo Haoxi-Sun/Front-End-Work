@@ -30,6 +30,9 @@ export default function Distribution({ title, data }) {
     accessibility: {
       enabled: false,
     },
+    chart:{
+      animation: false,
+    }
   });
 
   const [world, setWorld] = useState();

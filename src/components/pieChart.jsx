@@ -18,10 +18,12 @@ export default function Pie({ data, title }) {
       point: {
         valueSuffix: "%",
       },
+      enabled: false,
     },
     plotOptions: {
       pie: {
         allowPointSelect: true,
+        animation: false,
         cursor: "pointer",
         dataLabels: {
           enabled: true,
@@ -32,18 +34,30 @@ export default function Pie({ data, title }) {
     credits: {
       enabled: false,
     },
+    exporting: {
+      enabled: false,
+    },
   });
 
   useEffect(() => {
     if (!data) return;
+
     const processedTitle = title?.replace(/([A-Z])/g, " $1").trim();
+    const processedSubtitle = processedTitle?.split(" ")[0];
+    
     const peiSource = data?.map((item) => ({
       name: item.name,
       y: item.amount,
     }));
+
+    const total = peiSource.reduce((a, b) => a + b.y, 0);
+
     setOptions({
       title: {
         text: `<span style="text-transform: capitalize"}>${processedTitle}</span>`,
+      },
+      subtitle: {
+        text: `${processedSubtitle} total: ${total}`,
       },
       series: [
         {
