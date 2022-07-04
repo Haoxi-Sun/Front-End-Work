@@ -5,5 +5,9 @@
         "highcharts",
         "highmaps",
         "highstock"
+    ],
+    "cSpell.ignoreWords": [
+        "lightgreen",
+        "luanguage"
     ]
 }

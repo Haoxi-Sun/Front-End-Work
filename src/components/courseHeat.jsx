@@ -1,12 +1,22 @@
 import React, { useEffect, useState } from "react";
 import Highcharts from "highcharts";
 import HighchartsReact from "highcharts-react-official";
-import { zip } from 'lodash';
 
 if (typeof Highcharts === "object") {
   require("highcharts/modules/heatmap")(Highcharts);
   require("highcharts/modules/exporting")(Highcharts);
 }
+
+const WEEKDAYS = [
+  "Sunday",
+  "Monday",
+  "Tuesday",
+  "Wednesday",
+  "Thursday",
+  "Friday",
+  "Saturday",
+  "Total",
+];
 
 function getPointCategoryName(point, dimension) {
   var series = point.series,
@@ -16,16 +26,6 @@ function getPointCategoryName(point, dimension) {
 }
 
 export default function CourseHeat({ data }) {
-  const weekdays = [
-    "Sunday",
-    "Monday",
-    "Tuesday",
-    "Wednesday",
-    "Thursday",
-    "Friday",
-    "Saturday",
-    "Total",
-  ];
   const [options, setOptions] = useState({
     chart: {
       type: "heatmap",
@@ -35,7 +35,7 @@ export default function CourseHeat({ data }) {
       text: "Course Schedule Per Weekday",
     },
     xAxis: {
-      categories: weekdays,
+      categories: WEEKDAYS,
     },
     credits: {
       enabled: false,
@@ -99,12 +99,11 @@ export default function CourseHeat({ data }) {
 
   useEffect(() => {
     if (!data) return;
-    const yCategories = data.map((items) => items.name);
-    yCategories.push("Total");
+    const yCategories = data.map((items) => items.name).concat("Total");
 
     const rowData = data.map((items) => {
       const countCourse = new Array(8);
-      weekdays.forEach((weekday) => {
+      WEEKDAYS.forEach((weekday) => {
         countCourse[weekday] = 0;
       });
       countCourse["Total"] = 0;
@@ -113,29 +112,39 @@ export default function CourseHeat({ data }) {
         .flat()
         .map((item) => item?.split(" ")[0]);
 
-    courses.forEach(item =>{
-      const index =  weekdays.find((value) => value === item);
-      countCourse[index] += 1;
-    });
+      courses.forEach((item) => {
+        const index = WEEKDAYS.find((value) => value === item);
+        countCourse[index] += 1;
+      });
 
-    let total = 0;
-    weekdays.forEach((weekday) => {
+      let total = 0;
+      WEEKDAYS.forEach((weekday) => {
         total = total + countCourse[weekday];
-    });
-    countCourse["Total"] = total;
-    return countCourse;
+      });
+      countCourse["Total"] = total;
+      return countCourse;
     });
 
-    const sourceData = rowData.map((columnAry, index) => {
+    const sourceData = rowData
+      .map((columnAry, index) => {
         const result = [];
         let i = 0;
-        for (i = 0; i<columnAry.length; i++){
-            const day = weekdays[i];
-            result.push([i, index, columnAry[day]]);
-        } 
+        for (i = 0; i < columnAry.length; i++) {
+          const day = WEEKDAYS[i];
+          result.push([i, index, columnAry[day]]);
+        }
         return result;
-    }).flat();
-    console.log(sourceData);
+      })
+      .flat();
+
+    for (let col = 0; col < WEEKDAYS.length; col++) {
+      let totalCol = 0;
+      rowData.forEach(
+        (element) => (totalCol = totalCol + element[WEEKDAYS[col]])
+      );
+      sourceData.push([col, rowData.length, totalCol]);
+    }
+
     setOptions({
       yAxis: {
         categories: yCategories,
@@ -144,12 +153,12 @@ export default function CourseHeat({ data }) {
       },
       series: [
         {
-          name: 'Lessons per weekday',
+          name: "Lessons per weekday",
           borderWidth: 1,
           data: sourceData,
           dataLabels: {
             enabled: true,
-            color: '#000000',
+            color: "#000000",
           },
         },
       ],

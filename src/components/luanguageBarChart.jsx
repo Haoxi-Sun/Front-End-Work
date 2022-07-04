@@ -29,7 +29,6 @@ export default function LanguagesBarChart({ data }) {
       column: {
         plotOptions: {
           column: {
-            stacking: "normal",
             dataLabels: {
               enabled: true,
             },
@@ -109,8 +108,7 @@ export default function LanguagesBarChart({ data }) {
       stack: "teacher",
       stacking: "normal",
     }));
-    console.log("studentBar",studentBar);
-    console.log("teacherBar",teacherBar);
+
     setOptions({
       xAxis: {
         type: "category",
