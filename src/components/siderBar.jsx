@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import "antd/dist/antd.min.css";
 import { Menu } from "antd";
@@ -30,6 +30,7 @@ const Logo = styled.span`
 export default function SiderBar() {
   const [openKeys, setOpenKeys] = useState([]);
   const [rootSubmenuKeys, setRootSubmenuKeys] = useState([]);
+  const [selectedKeys, setSelectedKeys] = useState(["Overview_0"]);
   const path = useLocation().pathname.split("/")[2];
 
   const handleOpenKey = (items) => {
@@ -40,13 +41,15 @@ export default function SiderBar() {
       setOpenKeys(latestOpenKey ? [latestOpenKey] : []);
     }
   };
-
+  const handleSelect = (item) => {
+    setSelectedKeys(item.key);
+  };
   const renderMenu = (data) => {
-    return data.map((item) => {
+    return data.map((item, index) => {
       if (!item?.children) {
         if (item.label !== undefined) {
           return (
-            <Menu.Item key={item.key} icon={item.icon}>
+            <Menu.Item key={item.label + "_" + index} icon={item.icon}>
               <Link to={item.path}>
                 <span>{item.label}</span>
               </Link>
@@ -54,15 +57,19 @@ export default function SiderBar() {
           );
         }
       } else {
-        rootSubmenuKeys.push(item.key);
+        rootSubmenuKeys.push(item.label + "_" + index);
         const foundItem = item.children.find(
-          (foundItem) => path.indexOf(foundItem.key) === 0
+          (foundItem) => path.indexOf(foundItem.label + "_" + index) === 0
         );
         if (foundItem) {
-          setOpenKeys([item.key]);
+          setOpenKeys([item.label + "_" + index]);
         }
         return (
-          <SubMenu key={item.key} icon={item.icon} title={item.label}>
+          <SubMenu
+            key={item.label + "_" + index}
+            icon={item.icon}
+            title={item.label}
+          >
             {renderMenu(item.children)}
           </SubMenu>
         );
@@ -75,11 +82,12 @@ export default function SiderBar() {
         <Logo>CMS</Logo>
       </LogoContainer>
       <Menu
+        onSelect={handleSelect}
         theme="dark"
         mode="inline"
-        selectedKeys={path}
         onOpenChange={handleOpenKey}
         openKeys={openKeys}
+        selectedKeys={selectedKeys}
       >
         {renderMenu(RoutesList)}
       </Menu>
