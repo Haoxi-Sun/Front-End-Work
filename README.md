@@ -1,1 +1,1 @@
-* 可不可以麻烦老师详细讲解一下router和breadcrumb之间得联动？
+* 老师您好，我目前完成了sidebar 与 routes的绑定，但我目前没有关于刷新后menu仍是之前选中的menu的解决方法，用了defaultSelectedKeys和defaultOpenKeys，但目前没有什么进展，但还是希望老师能检查一下我的代码，不知道可不可以，谢谢您！
