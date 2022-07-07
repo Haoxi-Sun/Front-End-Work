@@ -1,16 +1,12 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import "antd/dist/antd.min.css";
 import SiderBar from "./siderBar";
 import HeaderBar from "./header";
-import { MenuUnfoldOutlined, MenuFoldOutlined } from "@ant-design/icons";
+import { MenuFoldOutlined } from "@ant-design/icons";
 import { Breadcrumb, Layout } from "antd";
-import { Route, Routes, useLocation, Link } from "react-router-dom";
-import StudentTable from "../pages/students";
-import Overview from "../pages/overview";
-import StudentDetails from "../pages/studentDetails";
+import { useLocation, Link, useRoutes, Outlet } from "react-router-dom";
 import styled from "styled-components";
-import { breadcrumbsRoutes } from "./breadcrumbsRoutes";
-
+import RoutesList from "./routes";
 const { Header, Sider, Content } = Layout;
 
 const SiderStyle = styled(Layout.Sider)`
@@ -48,7 +44,7 @@ const CollapsedStyle = styled.div`
 
 export default function DashLayout() {
   const [collapsed, setCollapsed] = useState(false);
-
+  const routesTree = useRoutes(RoutesList);
   // Breadcrumb Test
   const location = useLocation();
   const path = location.pathname;
@@ -126,13 +122,7 @@ export default function DashLayout() {
           ))}
         </Breadcrumb>
 
-        <ContentStyle>
-          <Routes>
-            <Route path="/overview" element={<Overview />} />
-            <Route path="/students" element={<StudentTable />} />
-            <Route path="/students/:id" element={<StudentDetails />} />
-          </Routes>
-        </ContentStyle>
+        <ContentStyle>{routesTree}</ContentStyle>
       </Layout>
     </Layout>
   );

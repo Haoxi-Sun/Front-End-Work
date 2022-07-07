@@ -1,19 +1,10 @@
-import React from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState } from "react";
+import { Link, useLocation } from "react-router-dom";
 import "antd/dist/antd.min.css";
-import {
-  MessageOutlined,
-  ReadOutlined,
-  DeploymentUnitOutlined,
-  SolutionOutlined,
-  DashboardOutlined,
-  TeamOutlined,
-  ProjectOutlined,
-  EditOutlined,
-  FileAddOutlined,
-} from "@ant-design/icons";
 import { Menu } from "antd";
 import styled from "styled-components";
+import RoutesList from "./routes";
+const { SubMenu } = Menu;
 <style>
   @import
   url('https://fonts.googleapis.com/css2?family=Montserrat&family=Roboto+Mono:wght@500&display=swap');
@@ -37,59 +28,61 @@ const Logo = styled.span`
 `;
 
 export default function SiderBar() {
-  const getItem = (label, key, icon, children) => {
-    return {
-      key,
-      icon,
-      children,
-      label,
-    };
-  };
+  const [openKeys, setOpenKeys] = useState([]);
+  const [rootSubmenuKeys, setRootSubmenuKeys] = useState([]);
+  const path = useLocation().pathname.split("/")[2];
 
-  const items = [
-    getItem("Overview", "1", <DashboardOutlined />),
-    getItem("Student", "sub1", <SolutionOutlined />, [
-      getItem(
-        "Student List",
-        "2",
-         // eslint-disable-next-line
-        <a target="_blank" rel="noopener noreferrer">
-          <TeamOutlined />
-        </a>
-      ),
-    ]),
-    getItem("Teacher", "sub2", <DeploymentUnitOutlined />, [
-      getItem("Teacher List", "3", <TeamOutlined />),
-    ]),
-    getItem("Course", "sub3", <ReadOutlined />, [
-      getItem("All Courses", "4", <ProjectOutlined />),
-      getItem("Add Course", "5", <FileAddOutlined />),
-      getItem("Edit Course", "6", <EditOutlined />),
-    ]),
-    getItem("Message", "7", <MessageOutlined />),
-  ];
-
-  const navigate = useNavigate();
-  const handleMenuClick = (event) => {
-    if (event.key === "1") {
-      navigate('./overview');
-    } else if (event.key === "2") {
-      navigate('./students');
+  const handleOpenKey = (items) => {
+    const latestOpenKey = items.find((key) => openKeys?.indexOf(key) === -1);
+    if (rootSubmenuKeys.indexOf(latestOpenKey) === -1) {
+      setOpenKeys(items);
+    } else {
+      setOpenKeys(latestOpenKey ? [latestOpenKey] : []);
     }
   };
 
+  const renderMenu = (data) => {
+    return data.map((item) => {
+      if (!item?.children) {
+        if (item.label !== undefined) {
+          return (
+            <Menu.Item key={item.key} icon={item.icon}>
+              <Link to={item.path}>
+                <span>{item.label}</span>
+              </Link>
+            </Menu.Item>
+          );
+        }
+      } else {
+        rootSubmenuKeys.push(item.key);
+        const foundItem = item.children.find(
+          (foundItem) => path.indexOf(foundItem.key) === 0
+        );
+        if (foundItem) {
+          setOpenKeys([item.key]);
+        }
+        return (
+          <SubMenu key={item.key} icon={item.icon} title={item.label}>
+            {renderMenu(item.children)}
+          </SubMenu>
+        );
+      }
+    });
+  };
   return (
     <>
       <LogoContainer>
         <Logo>CMS</Logo>
       </LogoContainer>
       <Menu
-        onClick={handleMenuClick}
         theme="dark"
         mode="inline"
-        defaultSelectedKeys={["1"]}
-        items={items}
-      />
+        selectedKeys={path}
+        onOpenChange={handleOpenKey}
+        openKeys={openKeys}
+      >
+        {renderMenu(RoutesList)}
+      </Menu>
     </>
   );
 }
