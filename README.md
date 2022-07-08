@@ -1,1 +1,1 @@
-* 老师您好，我目前完成了sidebar 与 routes的绑定，但我目前没有关于刷新后menu仍是之前选中的menu的解决方法，用了defaultSelectedKeys和defaultOpenKeys，但目前没有什么进展，但还是希望老师能检查一下我的代码，不知道可不可以，谢谢您！
+* 老师您好，我在sideBar里面用了DefaultSelectedKey,我不明白为什么我用defaultSelectedKey={['Overview_0']}是可行的，但我成defaultSelectedKey={defaultSelectedKey}其中这个key是等于Overview_0,但没有任何效果

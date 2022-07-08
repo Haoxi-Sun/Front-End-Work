@@ -45,7 +45,7 @@ const RoutesList = [
     icon: <DeploymentUnitOutlined />,
     children: [
       {
-        path: "overview",
+        path: "",
         label: "Teacher List",
         icon: <TeamOutlined />,
       },
@@ -56,17 +56,17 @@ const RoutesList = [
     icon: <ReadOutlined />,
     children: [
       {
-        path: "overview",
+        path: "",
         label: "All Courses",
         icon: <ProjectOutlined />,
       },
       {
-        path: "overview",
+        path: "",
         label: "Add Course",
         icon: <FileAddOutlined />,
       },
       {
-        path: "overview",
+        path: "",
         label: "Edit Course",
         icon: <EditOutlined />,
       },
@@ -74,7 +74,7 @@ const RoutesList = [
   },
   {
     label: "Message",
-    path: "overview",
+    path: "",
     icon: <MessageOutlined />,
   },
 ];

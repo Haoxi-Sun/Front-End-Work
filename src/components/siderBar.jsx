@@ -27,11 +27,34 @@ const Logo = styled.span`
   cursor: pointer;
 `;
 
+const generateKey = (item, index) =>{
+  return `${item.label}_${index}`;
+}
+
 export default function SiderBar() {
   const [openKeys, setOpenKeys] = useState([]);
   const [rootSubmenuKeys, setRootSubmenuKeys] = useState([]);
-  const [selectedKeys, setSelectedKeys] = useState(["Overview_0"]);
+  const [selectedKeys, setSelectedKeys] = useState([]);
+  const [defaultSelectKey, setDefaultSelectedKey] = useState([]);
   const path = useLocation().pathname.split("/")[2];
+
+  const getDefaultSelectedKey = (RoutesList) =>{
+    RoutesList.forEach((item, index) => {
+      if(!item.children){
+        if(item.path === path){
+          const key = generateKey(item, index)
+          setDefaultSelectedKey(key);
+        }
+      }
+     else{
+      getDefaultSelectedKey(item.children);
+      }
+    });
+  };
+
+  useEffect(() => {
+    getDefaultSelectedKey(RoutesList);
+  },[RoutesList, path])
 
   const handleOpenKey = (items) => {
     const latestOpenKey = items.find((key) => openKeys?.indexOf(key) === -1);
@@ -41,15 +64,14 @@ export default function SiderBar() {
       setOpenKeys(latestOpenKey ? [latestOpenKey] : []);
     }
   };
-  const handleSelect = (item) => {
-    setSelectedKeys(item.key);
-  };
+
   const renderMenu = (data) => {
     return data.map((item, index) => {
+      const itemKey = generateKey(item, index);
       if (!item?.children) {
         if (item.label !== undefined) {
           return (
-            <Menu.Item key={item.label + "_" + index} icon={item.icon}>
+            <Menu.Item key={itemKey} icon={item.icon}>
               <Link to={item.path}>
                 <span>{item.label}</span>
               </Link>
@@ -57,16 +79,16 @@ export default function SiderBar() {
           );
         }
       } else {
-        rootSubmenuKeys.push(item.label + "_" + index);
+        rootSubmenuKeys.push(itemKey);
         const foundItem = item.children.find(
-          (foundItem) => path.indexOf(foundItem.label + "_" + index) === 0
+          (foundItem) => path.indexOf(generateKey(foundItem, index)) === 0
         );
         if (foundItem) {
-          setOpenKeys([item.label + "_" + index]);
+          setOpenKeys([itemKey]);
         }
         return (
           <SubMenu
-            key={item.label + "_" + index}
+            key={itemKey}
             icon={item.icon}
             title={item.label}
           >
@@ -82,12 +104,12 @@ export default function SiderBar() {
         <Logo>CMS</Logo>
       </LogoContainer>
       <Menu
-        onSelect={handleSelect}
         theme="dark"
         mode="inline"
         onOpenChange={handleOpenKey}
+        // defaultOpenKeys={openKeys}
+        defaultSelectedKeys={defaultSelectKey}
         openKeys={openKeys}
-        selectedKeys={selectedKeys}
       >
         {renderMenu(RoutesList)}
       </Menu>
