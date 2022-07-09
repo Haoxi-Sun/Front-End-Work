@@ -36,6 +36,7 @@ const RoutesList = [
       },
       {
         path: "students/:id",
+        label: "Detail",
         element: <StudentDetails />,
       },
     ],

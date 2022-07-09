@@ -120,6 +120,15 @@ export default function DashLayout() {
               )}
             </Breadcrumb.Item>
           ))}
+          {/* {
+            RoutesList.map((item, index) =>{
+              <Breadcrumb.Item key={`${item.label}_${index}`}>
+                {
+                  item.path ? <Link to={item.path}>{item.label}</Link> : <>{item.label}</>
+                }
+              </Breadcrumb.Item>
+            })
+          } */}
         </Breadcrumb>
 
         <ContentStyle>{routesTree}</ContentStyle>

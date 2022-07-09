@@ -5,10 +5,6 @@ import { Menu } from "antd";
 import styled from "styled-components";
 import RoutesList from "./routes";
 const { SubMenu } = Menu;
-<style>
-  @import
-  url('https://fonts.googleapis.com/css2?family=Montserrat&family=Roboto+Mono:wght@500&display=swap');
-</style>;
 
 const LogoContainer = styled.div`
   height: 64px;
@@ -34,35 +30,33 @@ const generateKey = (item, index) => {
 export default function SiderBar() {
   const [rootSubmenuKeys, setRootSubmenuKeys] = useState([]);
   const [defaultOpenKeys, setDefaultOpenKeys] = useState([]);
-  const [defaultSelectKey, setDefaultSelectedKey] = useState([]);
-  const [openKeys, setOpenKeys] = useState([]);
+  const [defaultSelectedKey, setDefaultSelectedKey] = useState([]);
   const path = useLocation().pathname.split("/")[2];
 
-  const getDefaultSelectedKey = (data) => {
-    data.forEach((item, index) => {
-      if (!item.children) {
-        if (item.path === path) {
-          const key = generateKey(item, index);
-          defaultSelectKey.push(key);
-        }
-      } else {
-        rootSubmenuKeys.push(generateKey(item, index));
-        const foundItem = item.children.find((foundItem) => {
-          if (foundItem.path === path) {
-            return true;
-          }
-        });
-        if (foundItem) {
-          defaultOpenKeys.push(generateKey(item, index));
-        }
-        getDefaultSelectedKey(item.children);
-      }
-    });
-  };
-
   useEffect(() => {
+    setDefaultSelectedKey([]);
+    const getDefaultSelectedKey = (RoutesList) => {
+      RoutesList.forEach((item, index) => {
+        if (!item.children) {
+          if (item.path === path) {
+            defaultSelectedKey.push(generateKey(item, index));
+          }
+        } else {
+          rootSubmenuKeys.push(generateKey(item, index));
+          const foundItem = item.children.find((foundItem) => {
+            if (foundItem.path === path) {
+              return true;
+            }
+          });
+          if (foundItem) {
+            setDefaultOpenKeys([generateKey(item, index)]);
+          }
+          getDefaultSelectedKey(item.children);
+        }
+      });
+    };
     getDefaultSelectedKey(RoutesList);
-  }, [RoutesList, path]);
+  }, [path]);
 
   const handleOpenKey = (items) => {
     const latestOpenKey = items.find(
@@ -79,7 +73,7 @@ export default function SiderBar() {
     return data.map((item, index) => {
       const itemKey = generateKey(item, index);
       if (!item?.children) {
-        if (item.label !== undefined) {
+        if (item.label !== "Detail") {
           return (
             <Menu.Item key={itemKey} icon={item.icon}>
               <Link to={item.path}>
@@ -108,7 +102,7 @@ export default function SiderBar() {
         onOpenChange={handleOpenKey}
         defaultOpenKeys={defaultOpenKeys}
         openKeys={defaultOpenKeys}
-        defaultSelectedKeys={defaultSelectKey}
+        defaultSelectedKeys={defaultSelectedKey}
       >
         {renderMenu(RoutesList)}
       </Menu>
