@@ -27,41 +27,51 @@ const Logo = styled.span`
   cursor: pointer;
 `;
 
-const generateKey = (item, index) =>{
+const generateKey = (item, index) => {
   return `${item.label}_${index}`;
-}
+};
 
 export default function SiderBar() {
-  const [openKeys, setOpenKeys] = useState([]);
   const [rootSubmenuKeys, setRootSubmenuKeys] = useState([]);
-  const [selectedKeys, setSelectedKeys] = useState([]);
+  const [defaultOpenKeys, setDefaultOpenKeys] = useState([]);
   const [defaultSelectKey, setDefaultSelectedKey] = useState([]);
+  const [openKeys, setOpenKeys] = useState([]);
   const path = useLocation().pathname.split("/")[2];
 
-  const getDefaultSelectedKey = (RoutesList) =>{
-    RoutesList.forEach((item, index) => {
-      if(!item.children){
-        if(item.path === path){
-          const key = generateKey(item, index)
-          setDefaultSelectedKey(key);
+  const getDefaultSelectedKey = (data) => {
+    data.forEach((item, index) => {
+      if (!item.children) {
+        if (item.path === path) {
+          const key = generateKey(item, index);
+          defaultSelectKey.push(key);
         }
-      }
-     else{
-      getDefaultSelectedKey(item.children);
+      } else {
+        rootSubmenuKeys.push(generateKey(item, index));
+        const foundItem = item.children.find((foundItem) => {
+          if (foundItem.path === path) {
+            return true;
+          }
+        });
+        if (foundItem) {
+          defaultOpenKeys.push(generateKey(item, index));
+        }
+        getDefaultSelectedKey(item.children);
       }
     });
   };
 
   useEffect(() => {
     getDefaultSelectedKey(RoutesList);
-  },[RoutesList, path])
+  }, [RoutesList, path]);
 
   const handleOpenKey = (items) => {
-    const latestOpenKey = items.find((key) => openKeys?.indexOf(key) === -1);
+    const latestOpenKey = items.find(
+      (key) => defaultOpenKeys?.indexOf(key) === -1
+    );
     if (rootSubmenuKeys.indexOf(latestOpenKey) === -1) {
-      setOpenKeys(items);
+      setDefaultOpenKeys(items);
     } else {
-      setOpenKeys(latestOpenKey ? [latestOpenKey] : []);
+      setDefaultOpenKeys(latestOpenKey ? [latestOpenKey] : []);
     }
   };
 
@@ -79,19 +89,8 @@ export default function SiderBar() {
           );
         }
       } else {
-        rootSubmenuKeys.push(itemKey);
-        const foundItem = item.children.find(
-          (foundItem) => path.indexOf(generateKey(foundItem, index)) === 0
-        );
-        if (foundItem) {
-          setOpenKeys([itemKey]);
-        }
         return (
-          <SubMenu
-            key={itemKey}
-            icon={item.icon}
-            title={item.label}
-          >
+          <SubMenu key={itemKey} icon={item.icon} title={item.label}>
             {renderMenu(item.children)}
           </SubMenu>
         );
@@ -107,9 +106,9 @@ export default function SiderBar() {
         theme="dark"
         mode="inline"
         onOpenChange={handleOpenKey}
-        // defaultOpenKeys={openKeys}
+        defaultOpenKeys={defaultOpenKeys}
+        openKeys={defaultOpenKeys}
         defaultSelectedKeys={defaultSelectKey}
-        openKeys={openKeys}
       >
         {renderMenu(RoutesList)}
       </Menu>
