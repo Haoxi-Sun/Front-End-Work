@@ -44,9 +44,9 @@ const getDefaultKeys = (routesList, path) => {
         }
       });
       if (foundItem) {
-        openKeys = generateKey(item, index);
+        openKeys.push(generateKey(item, index));
       }
-        getDefaultKeys(item.children, path);
+      getDefaultKeys(item.children, path);
     }
   });
   return [selectedKeys, openKeys, submenuKeys];
@@ -54,22 +54,12 @@ const getDefaultKeys = (routesList, path) => {
 
 export default function SiderBar() {
   const path = useLocation().pathname.split("/")[2];
-  
+
   const [sKeys, oKeys, rKeys] = getDefaultKeys(routesList, path);
   const defaultSelectedKeys = [sKeys];
-  const [defaultOpenKeys, setDefaultOpenKeys] = useState([oKeys]);
+  const [defaultOpenKeys, setDefaultOpenKeys] = useState(oKeys);
   const rootSubmenuKeys = rKeys;
-  
-  const handleOpenKey = (items) => {
-    const latestOpenKey = items.find(
-      (key) => defaultOpenKeys?.indexOf(key) === -1
-    );
-    if (rootSubmenuKeys.indexOf(latestOpenKey) === -1) {
-      setDefaultOpenKeys(items);
-    } else {
-      setDefaultOpenKeys(latestOpenKey ? [latestOpenKey] : []);
-    }
-  };
+
   const renderMenu = (data) => {
     return data.map((item, index) => {
       const itemKey = generateKey(item, index);
@@ -92,6 +82,7 @@ export default function SiderBar() {
       }
     });
   };
+  console.log("defaultOpenKeys", defaultOpenKeys);
   return (
     <>
       <LogoContainer>
@@ -100,9 +91,8 @@ export default function SiderBar() {
       <Menu
         theme="dark"
         mode="inline"
-        onOpenChange={handleOpenKey}
-        openKeys={defaultOpenKeys}
-        selectedKeys={defaultSelectedKeys}
+        defaultOpenKeys={defaultOpenKeys}
+        defaultSelectedKeys={defaultSelectedKeys}
       >
         {renderMenu(routesList)}
       </Menu>
