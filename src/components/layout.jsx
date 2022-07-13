@@ -4,9 +4,9 @@ import SiderBar from "./siderBar";
 import HeaderBar from "./header";
 import { MenuFoldOutlined } from "@ant-design/icons";
 import { Breadcrumb, Layout } from "antd";
-import { useLocation, Link, useRoutes, Outlet } from "react-router-dom";
+import { useLocation, useRoutes } from "react-router-dom";
 import styled from "styled-components";
-import RoutesList from "./routes";
+import routesList from "./managerRoutes";
 const { Header, Sider, Content } = Layout;
 
 const SiderStyle = styled(Layout.Sider)`
@@ -41,47 +41,62 @@ const CollapsedStyle = styled.div`
   transition: color 0.3s;
   color: #fff;
 `;
+const predicateFn = (data, value) => data.path === value;
 
+const generateKey = (item, index) => {
+  return `${item.label}_${index}`;
+};
+
+const isDetailPath = (path) => {
+  const paths = path.split("/");
+  const length = paths.length;
+  const last = paths[length - 1];
+  const reg = /^\d{1,}$/;
+  return reg.test(last);
+};
+const deepSearchRecordFactory = (predicateFn, value, key) => {
+  return function search(data, record) {
+    const headNode = data.slice(0, 1)[0];
+    const restNodes = data.slice(1);
+
+    record.push(headNode);
+    if (predicateFn(headNode, value)) {
+      return record;
+    }
+    if (headNode[key]) {
+      const res = search(headNode[key], record);
+
+      if (res) {
+        return record;
+      } else {
+        record.pop();
+      }
+    }
+
+    if (restNodes.length) {
+      record.pop();
+
+      const res = search(restNodes, record);
+
+      if (res) {
+        return record;
+      }
+    }
+
+    return null;
+  };
+};
 export default function DashLayout() {
   const [collapsed, setCollapsed] = useState(false);
-  const routesTree = useRoutes(RoutesList);
-  // Breadcrumb Test
+  const routesTree = useRoutes(routesList);
   const location = useLocation();
   const path = location.pathname;
-  const getBreadcrumb = () => {
-    const splitPath = path
-      .split("/")
-      .filter((i) => i)
-      .splice(1);
-    const pathList = [];
-    splitPath.map((item) => {
-      let name = "";
-      if (item === "overview" || item === "manager") {
-        name = "Overview";
-        pathList.push({
-          path: path,
-          name: name,
-        });
-      } else if (item === "students") {
-        name = "Student";
-        pathList.push({
-          name: name,
-          path: undefined,
-        });
-        pathList.push({
-          path: path,
-          name: "Student List",
-        });
-      } else {
-        name = "Detail";
-        pathList.push({
-          path: path,
-          name: name,
-        });
-      }
-    });
-    return pathList;
-  };
+  const splitPath = path.split("/").slice(1);
+  const root = splitPath.slice(1, 3).join("/");
+  const filteredPath = isDetailPath(root) ? "students/:id" : root;
+
+  const deep_1 = deepSearchRecordFactory(predicateFn, filteredPath, "children");
+  const recorder = deep_1(routesList, []);
 
   return (
     <Layout style={{ minHeight: "100vh" }}>
@@ -111,24 +126,28 @@ export default function DashLayout() {
           <Breadcrumb.Item>
             <a href="./overview">CMS MANAGER SYSTEM</a>
           </Breadcrumb.Item>
-          {getBreadcrumb().map((item, index) => (
-            <Breadcrumb.Item key={index}>
-              {item.path ? (
-                <Link to={item.path}>{item.name}</Link>
-              ) : (
-                <>{item.name}</>
-              )}
-            </Breadcrumb.Item>
-          ))}
-          {/* {
-            RoutesList.map((item, index) =>{
-              <Breadcrumb.Item key={`${item.label}_${index}`}>
-                {
-                  item.path ? <Link to={item.path}>{item.label}</Link> : <>{item.label}</>
-                }
+          {recorder.map((item, index) => {
+            const key = generateKey(item, index);
+            if (item.path === "students/:id") {
+              return (
+                <>
+                  <Breadcrumb.Item key="Student List_0">
+                    <a href="../students">Student List</a>
+                  </Breadcrumb.Item>
+                  <Breadcrumb.Item key={"Detail_1"}>Detail</Breadcrumb.Item>
+                </>
+              );
+            }
+            return (
+              <Breadcrumb.Item key={key}>
+                {item.path ? (
+                  <a href={item.path}>{item.label}</a>
+                ) : (
+                  <>{item.label}</>
+                )}
               </Breadcrumb.Item>
-            })
-          } */}
+            );
+          })}
         </Breadcrumb>
 
         <ContentStyle>{routesTree}</ContentStyle>

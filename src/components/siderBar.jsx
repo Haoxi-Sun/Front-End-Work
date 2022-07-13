@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import "antd/dist/antd.min.css";
 import { Menu } from "antd";
 import styled from "styled-components";
-import RoutesList from "./routes";
+import routesList from "./managerRoutes";
 const { SubMenu } = Menu;
 
 const LogoContainer = styled.div`
@@ -27,37 +27,39 @@ const generateKey = (item, index) => {
   return `${item.label}_${index}`;
 };
 
-export default function SiderBar() {
-  const [rootSubmenuKeys, setRootSubmenuKeys] = useState([]);
-  const [defaultOpenKeys, setDefaultOpenKeys] = useState([]);
-  const [defaultSelectedKey, setDefaultSelectedKey] = useState([]);
-  const path = useLocation().pathname.split("/")[2];
-
-  useEffect(() => {
-    setDefaultSelectedKey([]);
-    const getDefaultSelectedKey = (RoutesList) => {
-      RoutesList.forEach((item, index) => {
-        if (!item.children) {
-          if (item.path === path) {
-            defaultSelectedKey.push(generateKey(item, index));
-          }
-        } else {
-          rootSubmenuKeys.push(generateKey(item, index));
-          const foundItem = item.children.find((foundItem) => {
-            if (foundItem.path === path) {
-              return true;
-            }
-          });
-          if (foundItem) {
-            setDefaultOpenKeys([generateKey(item, index)]);
-          }
-          getDefaultSelectedKey(item.children);
+let selectedKeys = null;
+let submenuKeys = [];
+let openKeys = [];
+const getDefaultKeys = (routesList, path) => {
+  routesList.forEach((item, index) => {
+    if (!item.children) {
+      if (item.path === path) {
+        selectedKeys = generateKey(item, index);
+      }
+    } else {
+      submenuKeys.push(generateKey(item, index));
+      const foundItem = item.children.find((foundItem) => {
+        if (foundItem.path === path) {
+          return true;
         }
       });
-    };
-    getDefaultSelectedKey(RoutesList);
-  }, [path]);
+      if (foundItem) {
+        openKeys = generateKey(item, index);
+      }
+        getDefaultKeys(item.children, path);
+    }
+  });
+  return [selectedKeys, openKeys, submenuKeys];
+};
 
+export default function SiderBar() {
+  const path = useLocation().pathname.split("/")[2];
+  
+  const [sKeys, oKeys, rKeys] = getDefaultKeys(routesList, path);
+  const defaultSelectedKeys = [sKeys];
+  const [defaultOpenKeys, setDefaultOpenKeys] = useState([oKeys]);
+  const rootSubmenuKeys = rKeys;
+  
   const handleOpenKey = (items) => {
     const latestOpenKey = items.find(
       (key) => defaultOpenKeys?.indexOf(key) === -1
@@ -68,7 +70,6 @@ export default function SiderBar() {
       setDefaultOpenKeys(latestOpenKey ? [latestOpenKey] : []);
     }
   };
-
   const renderMenu = (data) => {
     return data.map((item, index) => {
       const itemKey = generateKey(item, index);
@@ -100,11 +101,10 @@ export default function SiderBar() {
         theme="dark"
         mode="inline"
         onOpenChange={handleOpenKey}
-        defaultOpenKeys={defaultOpenKeys}
         openKeys={defaultOpenKeys}
-        defaultSelectedKeys={defaultSelectedKey}
+        selectedKeys={defaultSelectedKeys}
       >
-        {renderMenu(RoutesList)}
+        {renderMenu(routesList)}
       </Menu>
     </>
   );

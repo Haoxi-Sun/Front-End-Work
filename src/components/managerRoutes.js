@@ -15,7 +15,7 @@ import {
 } from "@ant-design/icons";
 import { Outlet } from "react-router-dom";
 
-const RoutesList = [
+const routesList = [
   {
     path: "overview",
     label: "Overview",
@@ -46,7 +46,7 @@ const RoutesList = [
     icon: <DeploymentUnitOutlined />,
     children: [
       {
-        path: "",
+        path: "teachers",
         label: "Teacher List",
         icon: <TeamOutlined />,
       },
@@ -57,17 +57,17 @@ const RoutesList = [
     icon: <ReadOutlined />,
     children: [
       {
-        path: "",
+        path: "courses",
         label: "All Courses",
         icon: <ProjectOutlined />,
       },
       {
-        path: "",
+        path: "courses/add-course",
         label: "Add Course",
         icon: <FileAddOutlined />,
       },
       {
-        path: "",
+        path: "courses/edit-course",
         label: "Edit Course",
         icon: <EditOutlined />,
       },
@@ -75,9 +75,9 @@ const RoutesList = [
   },
   {
     label: "Message",
-    path: "",
+    path: "message",
     icon: <MessageOutlined />,
   },
 ];
 
-export default RoutesList;
+export default routesList;

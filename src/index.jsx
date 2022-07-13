@@ -11,7 +11,6 @@ import Layout from "./components/layout";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
-  <React.StrictMode>
     <Router>
       <Routes>
         <Route path="/" element={<Navigate to="/login" />} />
@@ -20,5 +19,4 @@ root.render(
         <Route path="*" element={<Navigate to="dashboard/" />} />
       </Routes>
     </Router>
-  </React.StrictMode>
 );
