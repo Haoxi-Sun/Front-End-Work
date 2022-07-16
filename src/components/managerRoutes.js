@@ -2,6 +2,7 @@ import React from "react";
 import StudentTable from "../pages/students";
 import Overview from "../pages/overview";
 import StudentDetails from "../pages/studentDetails";
+import AllCourses from "../pages/allCourses";
 import {
   MessageOutlined,
   ReadOutlined,
@@ -55,11 +56,13 @@ const routesList = [
   {
     label: "Course",
     icon: <ReadOutlined />,
+    element: <Outlet />,
     children: [
       {
         path: "courses",
         label: "All Courses",
         icon: <ProjectOutlined />,
+        element: <AllCourses />,
       },
       {
         path: "courses/add-course",

@@ -41,6 +41,13 @@ const CollapsedStyle = styled.div`
   transition: color 0.3s;
   color: #fff;
 `;
+
+/**
+ * overview /
+ * overview, students, students/:id
+ * @param {*} value
+ * @returns
+ */
 const predicateFn = (data, value) => data.path === value;
 
 const generateKey = (item, index) => {
@@ -149,7 +156,6 @@ export default function DashLayout() {
             );
           })}
         </Breadcrumb>
-
         <ContentStyle>{routesTree}</ContentStyle>
       </Layout>
     </Layout>

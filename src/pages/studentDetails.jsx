@@ -38,11 +38,12 @@ const colStyle = {
 export default function StudentDetails() {
   const id = useParams().id;
   const [data, setData] = useState();
+  
   useEffect(() => {
     showStudentDetails(id).then((res) => {
       setData(res);
     });
-  });
+  }, []);
 
   const columns = [
     {

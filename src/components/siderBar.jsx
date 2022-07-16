@@ -44,7 +44,7 @@ const getDefaultKeys = (routesList, path) => {
         }
       });
       if (foundItem) {
-        openKeys.push(generateKey(item, index));
+        openKeys = [generateKey(item, index)];
       }
       getDefaultKeys(item.children, path);
     }
@@ -82,7 +82,6 @@ export default function SiderBar() {
       }
     });
   };
-  console.log("defaultOpenKeys", defaultOpenKeys);
   return (
     <>
       <LogoContainer>

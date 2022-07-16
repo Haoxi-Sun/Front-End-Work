@@ -67,6 +67,11 @@ async function getWorld(){
   return await axios.get("https://code.highcharts.com/mapdata/custom/world-palestine-highres.geo.json");
 }
 
+function showCourses(params){
+  return get("/courses", params).then((res) => {
+    return res.data;
+  })
+}
 export {
   login,
   logout,
@@ -78,4 +83,5 @@ export {
   displayOverview,
   getStatistics,
   getWorld,
+  showCourses,
 };

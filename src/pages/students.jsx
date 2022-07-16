@@ -168,7 +168,7 @@ export default function StudentTable() {
     setQuery(event.target.value);
     debouncedQuery(event.target.value);
   };
-
+  
   return (
     <>
       <AddSearch>
