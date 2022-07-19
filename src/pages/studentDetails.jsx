@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import "antd/dist/antd.min.css";
 import { Row, Col, Card, Avatar, Tabs, Tag, Table } from "antd";
 import styled from "styled-components";
-import { showStudentDetails } from "../api/api";
+import { getStudentDetails } from "../api/api";
 const { TabPane } = Tabs;
 
 const Title = styled(Avatar)`
@@ -40,7 +40,7 @@ export default function StudentDetails() {
   const [data, setData] = useState();
   
   useEffect(() => {
-    showStudentDetails(id).then((res) => {
+    getStudentDetails(id).then((res) => {
       setData(res);
     });
   }, []);

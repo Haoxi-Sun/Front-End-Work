@@ -1,15 +1,15 @@
-import React from "react";
-import "antd/dist/antd.min.css";
-import styled from "styled-components";
-import { Button, Col, Card, Row } from "antd";
-import { HeartFilled, UserOutlined } from "@ant-design/icons";
+import React from 'react';
+import 'antd/dist/antd.min.css';
+import styled from 'styled-components';
+import { Col, Card, Row } from 'antd';
+import { HeartFilled, UserOutlined } from '@ant-design/icons';
 
 const CardRow = styled(Row)`
   margin: -8px -3px 8px;
 `;
 
 const rowCol = {
-  position: "relative",
+  position: 'relative',
 };
 
 const ColDetail = styled(Col)`
@@ -17,71 +17,71 @@ const ColDetail = styled(Col)`
 `;
 
 const colIcon = {
-  padding: "8px 3px",
-  display: "flex",
-  alignItems: "center",
+  padding: '8px 3px',
+  display: 'flex',
+  alignItems: 'center',
 };
+
 const heartIcon = {
-  marginRight: "5px",
-  fontSize: "16px",
-  color: "red",
+  marginRight: '5px',
+  fontSize: '16px',
+  color: 'red',
 };
 
 const userIcon = {
-  marginRight: "5px",
-  fontSize: "16px",
-  color: "rgb(24,144,255)",
+  marginRight: '5px',
+  fontSize: '16px',
+  color: 'rgb(24,144,255)',
 };
 
 const teacherStyle = {
-  fontWeight: "bold",
+  fontWeight: 'bold',
 };
 
-export default function CourseCard({
-  cover,
-  name,
-  startTime,
-  star,
-  duration,
-  maxStudents,
-  teacherName,
-}) {
+export default function CourseCard({ course, details, style }) {
+
   return (
-    <Card bordered cover={<img src={cover} style={{ height: "260px" }} />}>
+    <Card
+      bordered
+      cover={<img src={course?.cover} style={{ height: '260px' }} />}
+      bodyStyle={style ? style : {}}
+    >
       <CardRow>
-        <h3>{name}</h3>
+        <h3>{course?.name}</h3>
       </CardRow>
+
       <CardRow align="middle" justify="space-between" style={rowCol}>
-        <ColDetail>{startTime}</ColDetail>
+        <ColDetail>{course?.startTime}</ColDetail>
         <Col style={colIcon}>
           <HeartFilled style={heartIcon} />
-          <b>{star}</b>
+          <b>{course?.star}</b>
         </Col>
       </CardRow>
+
       <CardRow align="middle" justify="space-between" style={rowCol}>
         <ColDetail>Duration:</ColDetail>
         <ColDetail>
-          <b>{duration} months</b>
+          <b>{course?.duration} months</b>
         </ColDetail>
       </CardRow>
+
       <CardRow align="middle" justify="space-between" style={rowCol}>
         <ColDetail>Teacher:</ColDetail>
         <ColDetail style={teacherStyle}>
-          <a>{teacherName}</a>
+          <a>{course?.teacherName}</a>
         </ColDetail>
       </CardRow>
+
       <CardRow align="middle" justify="space-between" style={rowCol}>
         <ColDetail>
           <UserOutlined style={userIcon} />
           <span>Student Limit:</span>
         </ColDetail>
         <ColDetail>
-          <b>{maxStudents}</b>
+          <b>{course?.maxStudents}</b>
         </ColDetail>
       </CardRow>
-      <Button type="primary" href="#">
-        Read More
-      </Button>
+      {details}
     </Card>
   );
 }

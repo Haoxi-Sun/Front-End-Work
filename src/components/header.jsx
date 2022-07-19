@@ -1,10 +1,10 @@
-import React from "react";
-import "antd/dist/antd.min.css";
-import { BellOutlined, UserOutlined, LogoutOutlined } from "@ant-design/icons";
-import { Avatar, Badge, Dropdown, Menu, message, Row } from "antd";
-import styled from "styled-components";
-import { useNavigate } from "react-router-dom";
-import { logout } from "../api/api";
+import React from 'react';
+import 'antd/dist/antd.min.css';
+import { BellOutlined, UserOutlined, LogoutOutlined } from '@ant-design/icons';
+import { Avatar, Badge, Dropdown, Menu, message, Row } from 'antd';
+import styled from 'styled-components';
+import { useNavigate } from 'react-router-dom';
+import { logout } from '../api/api';
 
 const HeaderIcons = styled.span`
   font-size: 18px;
@@ -19,7 +19,7 @@ export default function HeaderBar() {
   const handleClick = () => {
     logout().then((res) => {
       if (res) {
-        navigate("/");
+        navigate('/');
       }
     });
   };
@@ -28,7 +28,7 @@ export default function HeaderBar() {
     <Menu
       items={[
         {
-          key: "1",
+          key: '1',
           label: (
             <a target="_blank" rel="noopener noreferrer" onClick={handleClick}>
               <LogoutOutlined /> Logout
@@ -44,7 +44,7 @@ export default function HeaderBar() {
       <Row align="middle">
         <Badge>
           <HeaderIcons>
-            <BellOutlined style={{ fontSize: "24px", marginTop: "5px" }} />
+            <BellOutlined style={{ fontSize: '24px', marginTop: '5px' }} />
           </HeaderIcons>
         </Badge>
         <HeaderIcons>

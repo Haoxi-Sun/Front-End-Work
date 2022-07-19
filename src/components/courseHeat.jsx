@@ -1,38 +1,38 @@
-import React, { useEffect, useState } from "react";
-import Highcharts from "highcharts";
-import HighchartsReact from "highcharts-react-official";
+import React, { useEffect, useState } from 'react';
+import Highcharts from 'highcharts';
+import HighchartsReact from 'highcharts-react-official';
 
-if (typeof Highcharts === "object") {
-  require("highcharts/modules/heatmap")(Highcharts);
-  require("highcharts/modules/exporting")(Highcharts);
+if (typeof Highcharts === 'object') {
+  require('highcharts/modules/heatmap')(Highcharts);
+  require('highcharts/modules/exporting')(Highcharts);
 }
 
 const WEEKDAYS = [
-  "Sunday",
-  "Monday",
-  "Tuesday",
-  "Wednesday",
-  "Thursday",
-  "Friday",
-  "Saturday",
-  "Total",
+  'Sunday',
+  'Monday',
+  'Tuesday',
+  'Wednesday',
+  'Thursday',
+  'Friday',
+  'Saturday',
+  'Total',
 ];
 
 function getPointCategoryName(point, dimension) {
   var series = point.series,
-    isY = dimension === "y",
-    axis = series[isY ? "yAxis" : "xAxis"];
-  return axis.categories[point[isY ? "y" : "x"]];
+    isY = dimension === 'y',
+    axis = series[isY ? 'yAxis' : 'xAxis'];
+  return axis.categories[point[isY ? 'y' : 'x']];
 }
 
 export default function CourseHeat({ data }) {
   const [options, setOptions] = useState({
     chart: {
-      type: "heatmap",
+      type: 'heatmap',
       plotBorderWidth: 1,
     },
     title: {
-      text: "Course Schedule Per Weekday",
+      text: 'Course Schedule Per Weekday',
     },
     xAxis: {
       categories: WEEKDAYS,
@@ -42,27 +42,27 @@ export default function CourseHeat({ data }) {
     },
     colorAxis: {
       min: 0,
-      minColor: "#FFFFFF",
-      maxColor: "#1890ff",
+      minColor: '#FFFFFF',
+      maxColor: '#1890ff',
     },
     legend: {
-      align: "right",
-      layout: "vertical",
+      align: 'right',
+      layout: 'vertical',
       margin: 0,
-      verticalAlign: "top",
+      verticalAlign: 'top',
       y: 25,
       symbolHeight: 280,
     },
     tooltip: {
       formatter: function () {
         return (
-          "<b>" +
-          getPointCategoryName(this.point, "y") +
-          "</b> <br><b>" +
+          '<b>' +
+          getPointCategoryName(this.point, 'y') +
+          '</b> <br><b>' +
           this.point.value +
-          "</b> lessons on <b>" +
-          getPointCategoryName(this.point, "x") +
-          "</b>"
+          '</b> lessons on <b>' +
+          getPointCategoryName(this.point, 'x') +
+          '</b>'
         );
       },
     },
@@ -88,10 +88,10 @@ export default function CourseHeat({ data }) {
       point: {
         descriptionFormatter: function (point) {
           var ix = point.index + 1,
-            xName = getPointCategoryName(point, "x"),
-            yName = getPointCategoryName(point, "y"),
+            xName = getPointCategoryName(point, 'x'),
+            yName = getPointCategoryName(point, 'y'),
             val = point.value;
-          return ix + ". " + xName + " lessons " + yName + ", " + val + ".";
+          return ix + '. ' + xName + ' lessons ' + yName + ', ' + val + '.';
         },
       },
     },
@@ -99,18 +99,18 @@ export default function CourseHeat({ data }) {
 
   useEffect(() => {
     if (!data) return;
-    const yCategories = data.map((items) => items.name).concat("Total");
+    const yCategories = data.map((items) => items.name).concat('Total');
 
     const rowData = data.map((items) => {
       const countCourse = new Array(8);
       WEEKDAYS.forEach((weekday) => {
         countCourse[weekday] = 0;
       });
-      countCourse["Total"] = 0;
+      countCourse['Total'] = 0;
       const courses = items.courses
         .map((item) => item.classTime)
         .flat()
-        .map((item) => item?.split(" ")[0]);
+        .map((item) => item?.split(' ')[0]);
 
       courses.forEach((item) => {
         const index = WEEKDAYS.find((value) => value === item);
@@ -121,7 +121,7 @@ export default function CourseHeat({ data }) {
       WEEKDAYS.forEach((weekday) => {
         total = total + countCourse[weekday];
       });
-      countCourse["Total"] = total;
+      countCourse['Total'] = total;
       return countCourse;
     });
 
@@ -153,12 +153,12 @@ export default function CourseHeat({ data }) {
       },
       series: [
         {
-          name: "Lessons per weekday",
+          name: 'Lessons per weekday',
           borderWidth: 1,
           data: sourceData,
           dataLabels: {
             enabled: true,
-            color: "#000000",
+            color: '#000000',
           },
         },
       ],

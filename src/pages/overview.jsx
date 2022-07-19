@@ -1,36 +1,36 @@
-import React, { useEffect, useState } from "react";
-import "antd/dist/antd.min.css";
+import React, { useEffect, useState } from 'react';
+import 'antd/dist/antd.min.css';
 import {
   SolutionOutlined,
   DeploymentUnitOutlined,
   ReadOutlined,
-} from "@ant-design/icons";
-import { Col, Row, Card, Progress, Select } from "antd";
-import styled from "styled-components";
-import { displayOverview, getStatistics } from "../api/api";
-import Distribution from "../components/distribution";
-import Pie from "../components/pieChart";
-import Increment from "../components/increment";
-import LanguagesBarChart from "../components/luanguageBarChart";
-import CourseHeat from "../components/courseHeat";
+} from '@ant-design/icons';
+import { Col, Row, Card, Progress, Select } from 'antd';
+import styled from 'styled-components';
+import { getOverview, getStatistics } from '../api/api';
+import Distribution from '../components/distribution';
+import Pie from '../components/pieChart';
+import Increment from '../components/increment';
+import LanguagesBarChart from '../components/luanguageBarChart';
+import CourseHeat from '../components/courseHeat';
 
 const { Option } = Select;
 const statisticRow = {
-  margin: "-8px -12px 8px",
+  margin: '-8px -12px 8px',
 };
 
 const statisticCol = {
-  padding: "8px 12px",
+  padding: '8px 12px',
 };
 
 const iconStyle = {
-  background: "rgb(255, 255, 255)",
-  padding: "25px",
-  borderRadius: "50%",
-  color: "rgb(153, 153, 153)",
+  background: 'rgb(255, 255, 255)',
+  padding: '25px',
+  borderRadius: '50%',
+  color: 'rgb(153, 153, 153)',
 };
 
-const bgColor = { color: "#fff" };
+const bgColor = { color: '#fff' };
 
 const StatisticCard = styled(Card)`
   border-radius: 5px;
@@ -47,11 +47,11 @@ const StatisticCardIcon = styled(Col)`
 `;
 
 const dataRow = {
-  margin: "-8px -3px 8px",
+  margin: '-8px -3px 8px',
 };
 
 const dataCol = {
-  padding: "8px 3px",
+  padding: '8px 3px',
 };
 function OverviewCard({ data, title, style, icon }) {
   const formatFloor = (num1, num2) => {
@@ -74,7 +74,7 @@ function OverviewCard({ data, title, style, icon }) {
             percent={100 - formatFloor(data?.lastMonthAdded, data?.total)}
           />
           <p>{`${
-            formatFloor(data?.lastMonthAdded, data?.total) + "%"
+            formatFloor(data?.lastMonthAdded, data?.total) + '%'
           } Increase in 30 Days`}</p>
         </Col>
       </Row>
@@ -87,27 +87,27 @@ export default function Overview() {
   const [studentStatistics, setStudentStatistics] = useState();
   const [teacherStatistics, setTeacherStatistics] = useState();
   const [courseStatistics, setCourseStatistics] = useState();
-  const [distributionTitle, setDistributionTitle] = useState("student");
-  const [typeTitle, setTypeTitle] = useState("studentType");
+  const [distributionTitle, setDistributionTitle] = useState('student');
+  const [typeTitle, setTypeTitle] = useState('studentType');
 
   useEffect(() => {
-    displayOverview().then((res) => {
+    getOverview().then((res) => {
       if (res) {
         setOverview(res);
       }
     });
 
-    getStatistics("student").then((res) => {
+    getStatistics('student').then((res) => {
       if (res) {
         setStudentStatistics(res);
       }
     });
-    getStatistics("teacher").then((res) => {
+    getStatistics('teacher').then((res) => {
       if (res) {
         setTeacherStatistics(res);
       }
     });
-    getStatistics("course").then((res) => {
+    getStatistics('course').then((res) => {
       if (res) {
         setCourseStatistics(res);
       }
@@ -121,7 +121,7 @@ export default function Overview() {
           <OverviewCard
             title="TOTAL STUDENTS"
             data={overview?.student}
-            style={{ background: "#1890ff" }}
+            style={{ background: '#1890ff' }}
             icon={<SolutionOutlined style={iconStyle} />}
           />
         </Col>
@@ -129,7 +129,7 @@ export default function Overview() {
           <OverviewCard
             title="TOTAL TEACHERS"
             data={overview?.teacher}
-            style={{ background: "#673bb7" }}
+            style={{ background: '#673bb7' }}
             icon={<DeploymentUnitOutlined style={iconStyle} />}
           />
         </Col>
@@ -137,7 +137,7 @@ export default function Overview() {
           <OverviewCard
             title="TOTAL COURSES"
             data={overview?.course}
-            style={{ background: "#ffaa16" }}
+            style={{ background: '#ffaa16' }}
             icon={<ReadOutlined style={iconStyle} />}
           />
         </Col>
@@ -163,7 +163,7 @@ export default function Overview() {
             <Distribution
               title={distributionTitle}
               data={
-                distributionTitle === "student"
+                distributionTitle === 'student'
                   ? studentStatistics?.country
                   : teacherStatistics?.country
               }
@@ -186,9 +186,9 @@ export default function Overview() {
               </Select>
             }
           >
-            {typeTitle === "studentType" ? (
+            {typeTitle === 'studentType' ? (
               <Pie data={studentStatistics?.type} title={typeTitle} />
-            ) : typeTitle === "courseType" ? (
+            ) : typeTitle === 'courseType' ? (
               <Pie data={courseStatistics?.type} title={typeTitle} />
             ) : (
               <Row gutter={16}>
@@ -243,11 +243,11 @@ export default function Overview() {
         </Col>
       </Row>
       <Row style={dataRow}>
-            <Col span={24} style={dataCol}>
-              <Card bordered title="Course Schedule">
-              <CourseHeat data={courseStatistics?.classTime} />
-              </Card>
-            </Col>
+        <Col span={24} style={dataCol}>
+          <Card bordered title="Course Schedule">
+            <CourseHeat data={courseStatistics?.classTime} />
+          </Card>
+        </Col>
       </Row>
     </>
   );

@@ -1,7 +1,7 @@
-import axios from "axios";
-import { message } from "antd";
+import axios from 'axios';
+import { message } from 'antd';
 
-const baseURL = "http://cms.chtoma.com/api";
+const baseURL = 'http://cms.chtoma.com/api';
 const axiosInstance = axios.create({
   baseURL: baseURL,
 });
@@ -9,8 +9,8 @@ const axiosInstance = axios.create({
 axiosInstance.defaults.timeout = 100000;
 
 axiosInstance.interceptors.request.use((config) => {
-  if (!config.url.includes("login")) {
-    const token = JSON.parse(localStorage.getItem("Data")).token;
+  if (!config.url.includes('login')) {
+    const token = JSON.parse(localStorage.getItem('Data')).token;
     config.headers.Authorization = `Bearer ${token}`;
   }
   return config;
@@ -52,7 +52,7 @@ async function del(path) {
 async function get(path, params) {
   const url = baseURL + path;
   return axiosInstance
-    .get(url, {params: params})
+    .get(url, { params: params })
     .then((res) => res.data)
     .catch((error) => {
       message.error(error.response?.data.msg);

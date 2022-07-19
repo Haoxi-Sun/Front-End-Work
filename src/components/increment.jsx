@@ -1,15 +1,15 @@
-import React, { useEffect, useState } from "react";
-import Highcharts from "highcharts";
-import HighchartsReact from "highcharts-react-official";
+import React, { useEffect, useState } from 'react';
+import Highcharts from 'highcharts';
+import HighchartsReact from 'highcharts-react-official';
 
 export default function Increment({ data }) {
   const [options, setOptions] = useState({
     title: {
-      text: "",
+      text: '',
     },
     yAxis: {
       title: {
-        text: "Increment",
+        text: 'Increment',
       },
     },
     accessibility: {
@@ -17,18 +17,18 @@ export default function Increment({ data }) {
     },
     xAxis: {
       categories: [
-        "Jan",
-        "Feb",
-        "Mar",
-        "Apr",
-        "May",
-        "Jun",
-        "Jul",
-        "Aug",
-        "Sep",
-        "Oct",
-        "Nov",
-        "Dec",
+        'Jan',
+        'Feb',
+        'Mar',
+        'Apr',
+        'May',
+        'Jun',
+        'Jul',
+        'Aug',
+        'Sep',
+        'Oct',
+        'Nov',
+        'Dec',
       ],
     },
     credits: {
@@ -38,9 +38,9 @@ export default function Increment({ data }) {
       enable: false,
     },
     legend: {
-      layout: "horizontal",
-      align: "center",
-      verticalAlign: "bottom",
+      layout: 'horizontal',
+      align: 'center',
+      verticalAlign: 'bottom',
     },
     plotOptions: {
       line: {
@@ -64,7 +64,7 @@ export default function Increment({ data }) {
     const currentData = filteredData.map(([name, items]) => ({
       name: name,
       data: items.filter(
-        (item) => item.name.split("-")[0] === currentYear.toString()
+        (item) => item.name.split('-')[0] === currentYear.toString()
       ),
     }));
 
@@ -72,9 +72,9 @@ export default function Increment({ data }) {
       name: Object.values(items)[0],
       data: new Array(12).fill(0).map((_, index) => {
         const month = index + 1;
-        const name = month > 9 ? month.toString() : "0" + month.toString();
+        const name = month > 9 ? month.toString() : '0' + month.toString();
         const target = Object.values(items)[1].find(
-          (element) => element.name.split("-")[1] === name
+          (element) => element.name.split('-')[1] === name
         );
         if (target === undefined) return 0;
         return target.amount;

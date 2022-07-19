@@ -1,8 +1,8 @@
-import React from "react";
-import StudentTable from "../pages/students";
-import Overview from "../pages/overview";
-import StudentDetails from "../pages/studentDetails";
-import AllCourses from "../pages/allCourses";
+import React from 'react';
+import StudentTable from '../pages/students';
+import Overview from '../pages/overview';
+import StudentDetails from '../pages/studentDetails';
+import Courses from '../pages/courses';
 import {
   MessageOutlined,
   ReadOutlined,
@@ -13,72 +13,78 @@ import {
   ProjectOutlined,
   EditOutlined,
   FileAddOutlined,
-} from "@ant-design/icons";
-import { Outlet } from "react-router-dom";
+} from '@ant-design/icons';
+import { Outlet } from 'react-router-dom';
+import CourseDetails from '../pages/courseDetails';
 
 const routesList = [
   {
-    path: "overview",
-    label: "Overview",
+    path: 'overview',
+    label: 'Overview',
     icon: <DashboardOutlined />,
     element: <Overview />,
   },
   {
-    path: "",
-    label: "Student",
+    path: '',
+    label: 'Student',
     icon: <SolutionOutlined />,
     element: <Outlet />,
     children: [
       {
-        path: "students",
-        label: "Student List",
+        path: 'students',
+        label: 'Student List',
         icon: <TeamOutlined />,
         element: <StudentTable />,
       },
       {
-        path: "students/:id",
-        label: "Detail",
+        path: 'students/:id',
+        label: 'Detail',
         element: <StudentDetails />,
       },
     ],
   },
   {
-    label: "Teacher",
+    label: 'Teacher',
     icon: <DeploymentUnitOutlined />,
     children: [
       {
-        path: "teachers",
-        label: "Teacher List",
+        path: 'teachers',
+        label: 'Teacher List',
         icon: <TeamOutlined />,
       },
     ],
   },
   {
-    label: "Course",
+    label: 'Course',
     icon: <ReadOutlined />,
     element: <Outlet />,
     children: [
       {
-        path: "courses",
-        label: "All Courses",
+        path: 'courses',
+        label: 'All Courses',
         icon: <ProjectOutlined />,
-        element: <AllCourses />,
+        element: <Courses />,
       },
       {
-        path: "courses/add-course",
-        label: "Add Course",
+        path: 'courses/:id',
+        label: 'Detail',
+        element: <CourseDetails />,
+      },
+      {
+        path: 'courses/add-course',
+        label: 'Add Course',
         icon: <FileAddOutlined />,
       },
       {
-        path: "courses/edit-course",
-        label: "Edit Course",
+        path: 'courses/edit-course',
+        label: 'Edit Course',
         icon: <EditOutlined />,
       },
     ],
   },
   {
-    label: "Message",
-    path: "message",
+    label: 'Message',
+    path: 'message',
     icon: <MessageOutlined />,
   },
 ];

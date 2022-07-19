@@ -1,14 +1,14 @@
-import React, { useEffect, useState } from "react";
-import Highcharts from "highcharts/highmaps";
-import HighchartsReact from "highcharts-react-official";
-import { getWorld } from "../api/api";
+import React, { useEffect, useState } from 'react';
+import Highcharts from 'highcharts/highmaps';
+import HighchartsReact from 'highcharts-react-official';
+import { getWorld } from '../api/api';
 
 export default function Distribution({ title, data }) {
   const [options, setOptions] = useState({
     colorAxis: {
       min: 0,
       stops: [
-        [0, "#EFEFFF"],
+        [0, '#EFEFFF'],
         [0.5, Highcharts.getOptions().colors[0]],
         [
           1,
@@ -20,9 +20,9 @@ export default function Distribution({ title, data }) {
     },
 
     legend: {
-      layout: "vertical",
-      align: "left",
-      verticalAlign: "bottom",
+      layout: 'vertical',
+      align: 'left',
+      verticalAlign: 'bottom',
     },
     credits: {
       enabled: false,
@@ -30,9 +30,9 @@ export default function Distribution({ title, data }) {
     accessibility: {
       enabled: false,
     },
-    chart:{
+    chart: {
       animation: false,
-    }
+    },
   });
 
   const [world, setWorld] = useState();
@@ -55,7 +55,7 @@ export default function Distribution({ title, data }) {
       );
       return !!target
         ? {
-            "hc-key": target.properties["hc-key"],
+            'hc-key': target.properties['hc-key'],
             value: item.amount,
           }
         : {};
@@ -69,10 +69,10 @@ export default function Distribution({ title, data }) {
         {
           data: mapSource,
           mapData: world,
-          name: "Total",
+          name: 'Total',
           states: {
             hover: {
-              color: "#BADA55",
+              color: '#BADA55',
             },
           },
         },
@@ -83,7 +83,7 @@ export default function Distribution({ title, data }) {
   return (
     <HighchartsReact
       highcharts={Highcharts}
-      constructorType={"mapChart"}
+      constructorType={'mapChart'}
       options={options}
     />
   );

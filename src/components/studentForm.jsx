@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from "react";
-import "antd/dist/antd.min.css";
-import { Input, message, Modal, Form, Select } from "antd";
-import { useForm } from "antd/lib/form/Form";
-import { addStudent, editStudent } from "../api/api";
+import React, { useEffect, useState } from 'react';
+import 'antd/dist/antd.min.css';
+import { Input, message, Modal, Form, Select } from 'antd';
+import { useForm } from 'antd/lib/form/Form';
+import { addStudent, editStudent } from '../api/api';
 
 const { Option } = Select;
 
@@ -16,10 +16,10 @@ export default function StudentForm(props) {
       form.setFieldsValue(props.value);
     } else {
       form.setFieldsValue({
-        name: "",
-        country: "",
-        email: "",
-        type: "",
+        name: '',
+        country: '',
+        email: '',
+        type: '',
       });
     }
   }, [props.value]);
@@ -30,7 +30,7 @@ export default function StudentForm(props) {
       .then((res) => {
         props.setIsModalVisible(false);
         if (res) {
-          message.success("Success");
+          message.success('Success');
         }
       })
       .finally(() => setIsLoading(false));
@@ -48,7 +48,7 @@ export default function StudentForm(props) {
       .then((res) => {
         props.setIsModalVisible(false);
         if (res) {
-          message.success("Success");
+          message.success('Success');
         }
       })
       .finally(() => setIsLoading(false));
@@ -58,7 +58,7 @@ export default function StudentForm(props) {
     <>
       <Modal
         forceRender
-        title={isEdit ? "Edit Student" : "Add Student"}
+        title={isEdit ? 'Edit Student' : 'Add Student'}
         afterClose={() => form.resetFields()}
         centered
         destroyOnClose
@@ -71,7 +71,7 @@ export default function StudentForm(props) {
             }
           });
         }}
-        okText={isEdit ? "Update" : "Add"}
+        okText={isEdit ? 'Update' : 'Add'}
         visible={props.isModalVisible}
         onCancel={() => {
           props.setIsModalVisible(false);
@@ -96,7 +96,7 @@ export default function StudentForm(props) {
           <Form.Item
             label="Email"
             name="email"
-            rules={[{ required: true }, { type: "email" }]}
+            rules={[{ required: true }, { type: 'email' }]}
           >
             <Input />
           </Form.Item>

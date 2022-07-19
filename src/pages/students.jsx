@@ -1,12 +1,12 @@
-import React, { useEffect, useState, useCallback } from "react";
-import { Link } from "react-router-dom";
-import "antd/dist/antd.min.css";
-import { Button, Input, Space, Table, Popconfirm } from "antd";
-import { formatDistanceToNow } from "date-fns";
-import styled from "styled-components";
-import StudentForm from "../components/studentForm";
-import _debounce from "lodash.debounce";
-import { deleteStudent, showStudents } from "../api/api";
+import React, { useEffect, useState, useCallback } from 'react';
+import { Link } from 'react-router-dom';
+import 'antd/dist/antd.min.css';
+import { Button, Input, Space, Table, Popconfirm } from 'antd';
+import { formatDistanceToNow } from 'date-fns';
+import styled from 'styled-components';
+import StudentForm from '../components/studentForm';
+import _debounce from 'lodash.debounce';
+import { deleteStudent, getStudents } from '../api/api';
 
 const Search = styled(Input.Search)`
   width: 30%;
@@ -32,7 +32,7 @@ export default function StudentTable() {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [editValues, setEditValues] = useState();
 
-  const [query, setQuery] = useState("");
+  const [query, setQuery] = useState('');
   const debouncedQuery = useCallback(
     _debounce(handleDebounceFunction, 500),
     []
@@ -40,77 +40,77 @@ export default function StudentTable() {
 
   const columns = [
     {
-      title: "No.",
-      key: "index",
+      title: 'No.',
+      key: 'index',
       render: (_1, _2, index) => index + 1,
     },
     {
-      title: "Name",
-      dataIndex: "name",
+      title: 'Name',
+      dataIndex: 'name',
       sorter: (prevStudent, nextStudent) => {
         prevStudent.name.localeCompare(nextStudent.name);
       },
       render: (_, record) => <Link to={`${record.id}`}>{record.name}</Link>,
     },
     {
-      title: "Area",
-      dataIndex: "country",
-      width: "10%",
+      title: 'Area',
+      dataIndex: 'country',
+      width: '10%',
       filters: [
         {
-          text: "China",
-          value: "China",
+          text: 'China',
+          value: 'China',
         },
         {
-          text: "New Zealand",
-          value: "New Zealand",
+          text: 'New Zealand',
+          value: 'New Zealand',
         },
         {
-          text: "Canada",
-          value: "Canada",
+          text: 'Canada',
+          value: 'Canada',
         },
         {
-          text: "Australia",
-          value: "Australia",
+          text: 'Australia',
+          value: 'Australia',
         },
       ],
       onFilter: (value, record) => record.country.includes(value),
     },
     {
-      title: "Email",
-      dataIndex: "email",
+      title: 'Email',
+      dataIndex: 'email',
     },
     {
-      title: "Selected Curriculum",
-      dataIndex: "courses",
-      width: "25%",
-      render: (courses) => courses.map((item) => item.name).join(","),
+      title: 'Selected Curriculum',
+      dataIndex: 'courses',
+      width: '25%',
+      render: (courses) => courses.map((item) => item.name).join(','),
     },
     {
-      title: "Student Type",
-      dataIndex: "type",
+      title: 'Student Type',
+      dataIndex: 'type',
       filters: [
         {
-          text: "Developer",
-          value: "developer",
+          text: 'Developer',
+          value: 'developer',
         },
         {
-          text: "Tester",
-          value: "tester",
+          text: 'Tester',
+          value: 'tester',
         },
       ],
       render: (type) => type?.name,
       onFilter: (value, record) => record.type.name.includes(value),
     },
     {
-      title: "Join Time",
-      dataIndex: "createdAt",
+      title: 'Join Time',
+      dataIndex: 'createdAt',
       render: (value) =>
         formatDistanceToNow(new Date(value), { addSuffix: true }),
     },
     {
-      title: "Action",
-      dataIndex: "action",
+      title: 'Action',
+      dataIndex: 'action',
       render: (_, record) => (
         <Space>
           <a
@@ -144,7 +144,7 @@ export default function StudentTable() {
 
   useEffect(() => {
     setLoading(true);
-    showStudents({
+    getStudents({
       page: pagination.current,
       limit: pagination.pageSize,
     }).then((res) => {
@@ -157,7 +157,7 @@ export default function StudentTable() {
   }, [pagination]);
 
   function handleDebounceFunction(debounceValue) {
-    showStudents({
+    getStudents({
       query: debounceValue,
       page: pagination.current,
       limit: pagination.pageSize,
@@ -168,7 +168,7 @@ export default function StudentTable() {
     setQuery(event.target.value);
     debouncedQuery(event.target.value);
   };
-  
+
   return (
     <>
       <AddSearch>
@@ -190,7 +190,7 @@ export default function StudentTable() {
       />
       <Table
         columns={columns}
-        rowKey={"id"}
+        rowKey={'id'}
         dataSource={data}
         pagination={{
           total: total,

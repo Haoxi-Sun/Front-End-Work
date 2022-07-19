@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
-import Highcharts from "highcharts";
-import PieChart from "highcharts-react-official";
+import React, { useEffect, useState } from 'react';
+import Highcharts from 'highcharts';
+import PieChart from 'highcharts-react-official';
 
 export default function Pie({ data, title }) {
   const [options, setOptions] = useState({
@@ -8,15 +8,15 @@ export default function Pie({ data, title }) {
       plotBackgroundColor: null,
       plotBorderWidth: null,
       plotShadow: false,
-      type: "pie",
+      type: 'pie',
     },
     tooltip: {
       pointFormat:
-        "{series.name}: <b>{point.percentage:.1f}%</b> <br> total: {point.y}",
+        '{series.name}: <b>{point.percentage:.1f}%</b> <br> total: {point.y}',
     },
     accessibility: {
       point: {
-        valueSuffix: "%",
+        valueSuffix: '%',
       },
       enabled: false,
     },
@@ -24,10 +24,10 @@ export default function Pie({ data, title }) {
       pie: {
         allowPointSelect: true,
         animation: false,
-        cursor: "pointer",
+        cursor: 'pointer',
         dataLabels: {
           enabled: true,
-          format: "<b>{point.name}</b>: {point.percentage:.1f} %",
+          format: '<b>{point.name}</b>: {point.percentage:.1f} %',
         },
       },
     },
@@ -42,9 +42,9 @@ export default function Pie({ data, title }) {
   useEffect(() => {
     if (!data) return;
 
-    const processedTitle = title?.replace(/([A-Z])/g, " $1").trim();
-    const processedSubtitle = processedTitle?.split(" ")[0];
-    
+    const processedTitle = title?.replace(/([A-Z])/g, ' $1').trim();
+    const processedSubtitle = processedTitle?.split(' ')[0];
+
     const peiSource = data?.map((item) => ({
       name: item.name,
       y: item.amount,
@@ -61,7 +61,7 @@ export default function Pie({ data, title }) {
       },
       series: [
         {
-          name: "percentage",
+          name: 'percentage',
           colorByPoint: true,
           data: peiSource,
         },

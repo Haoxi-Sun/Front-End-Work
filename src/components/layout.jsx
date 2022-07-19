@@ -1,12 +1,13 @@
-import React, { useState } from "react";
-import "antd/dist/antd.min.css";
-import SiderBar from "./siderBar";
-import HeaderBar from "./header";
-import { MenuFoldOutlined } from "@ant-design/icons";
-import { Breadcrumb, Layout } from "antd";
-import { useLocation, useRoutes } from "react-router-dom";
-import styled from "styled-components";
-import routesList from "./managerRoutes";
+import React, { useState } from 'react';
+import 'antd/dist/antd.min.css';
+import SideBar from './sideBar';
+import HeaderBar from './header';
+import { MenuFoldOutlined } from '@ant-design/icons';
+import { Breadcrumb, Layout } from 'antd';
+import { useLocation, useRoutes } from 'react-router-dom';
+import styled from 'styled-components';
+import routesList from './managerRoutes';
+import generateCalendar from 'antd/lib/calendar/generateCalendar';
 const { Header, Sider, Content } = Layout;
 
 const SiderStyle = styled(Layout.Sider)`
@@ -42,12 +43,6 @@ const CollapsedStyle = styled.div`
   color: #fff;
 `;
 
-/**
- * overview /
- * overview, students, students/:id
- * @param {*} value
- * @returns
- */
 const predicateFn = (data, value) => data.path === value;
 
 const generateKey = (item, index) => {
@@ -55,12 +50,16 @@ const generateKey = (item, index) => {
 };
 
 const isDetailPath = (path) => {
-  const paths = path.split("/");
+  if (path === undefined) {
+    return;
+  }
+  const paths = path.split('/');
   const length = paths.length;
   const last = paths[length - 1];
   const reg = /^\d{1,}$/;
   return reg.test(last);
 };
+
 const deepSearchRecordFactory = (predicateFn, value, key) => {
   return function search(data, record) {
     const headNode = data.slice(0, 1)[0];
@@ -70,9 +69,9 @@ const deepSearchRecordFactory = (predicateFn, value, key) => {
     if (predicateFn(headNode, value)) {
       return record;
     }
+
     if (headNode[key]) {
       const res = search(headNode[key], record);
-
       if (res) {
         return record;
       } else {
@@ -82,66 +81,81 @@ const deepSearchRecordFactory = (predicateFn, value, key) => {
 
     if (restNodes.length) {
       record.pop();
-
       const res = search(restNodes, record);
-
       if (res) {
         return record;
       }
     }
-
     return null;
   };
 };
+
+const foundPath = (data, path) => {
+  return data
+    .map((item) => {
+      if (item.path === path) {
+        return item.label;
+      } else {
+        if (item.children) {
+          return foundPath(item.children, path);
+        }
+      }
+    })
+    .flat()
+    .filter(Boolean);
+};
+
 export default function DashLayout() {
   const [collapsed, setCollapsed] = useState(false);
   const routesTree = useRoutes(routesList);
   const location = useLocation();
   const path = location.pathname;
-  const splitPath = path.split("/").slice(1);
-  const root = splitPath.slice(1, 3).join("/");
-  const filteredPath = isDetailPath(root) ? "students/:id" : root;
+  const splitPaths = path.split('/').slice(1);
+  const root = splitPaths.slice(1, 3).join('/');
+  const filteredPath = isDetailPath(root) ? `${splitPaths[1]}/:id` : root;
 
-  const deep_1 = deepSearchRecordFactory(predicateFn, filteredPath, "children");
-  const recorder = deep_1(routesList, []);
+  const search = deepSearchRecordFactory(predicateFn, filteredPath, 'children');
+  const nodes = search(routesList, []);
 
   return (
-    <Layout style={{ minHeight: "100vh" }}>
+    <Layout style={{ minHeight: '100vh' }}>
       <SiderStyle
         collapsible
         collapsed={collapsed}
         onCollapse={(value) => setCollapsed(value)}
       >
-        <SiderBar />
+        <SideBar />
       </SiderStyle>
+
       <Layout className="site-layout">
         <HeaderStyle>
           <CollapsedStyle
             onClick={() => {
               setCollapsed(!collapsed);
             }}
-            onMouseOver={(event) => (event.target.style.color = "#1890ff")}
-            onMouseOut={(event) => (event.target.style.color = "#fff")}
+            onMouseOver={(event) => (event.target.style.color = '#1890ff')}
+            onMouseOut={(event) => (event.target.style.color = '#fff')}
           >
             {collapsed ? <MenuFoldOutlined /> : <MenuFoldOutlined />}
           </CollapsedStyle>
-
           <HeaderBar />
         </HeaderStyle>
 
-        <Breadcrumb style={{ margin: "0 16px", padding: "16px" }}>
+        <Breadcrumb style={{ margin: '0 16px', padding: '16px' }}>
           <Breadcrumb.Item>
-            <a href="./overview">CMS MANAGER SYSTEM</a>
+            <a href="../overview">CMS MANAGER SYSTEM</a>
           </Breadcrumb.Item>
-          {recorder.map((item, index) => {
+          {nodes.map((item, index) => {
             const key = generateKey(item, index);
-            if (item.path === "students/:id") {
+            if (item.path !== undefined && item.path.includes('/:id')) {
+              const mainPath = item.path.split('/')[0];
+              const mainLabel = foundPath(routesList, mainPath);
               return (
                 <>
-                  <Breadcrumb.Item key="Student List_0">
-                    <a href="../students">Student List</a>
+                  <Breadcrumb.Item key={mainPath}>
+                    <a href={`../${mainPath}`}>{mainLabel}</a>
                   </Breadcrumb.Item>
-                  <Breadcrumb.Item key={"Detail_1"}>Detail</Breadcrumb.Item>
+                  <Breadcrumb.Item key={item.path}>Detail</Breadcrumb.Item>
                 </>
               );
             }
@@ -156,6 +170,7 @@ export default function DashLayout() {
             );
           })}
         </Breadcrumb>
+
         <ContentStyle>{routesTree}</ContentStyle>
       </Layout>
     </Layout>

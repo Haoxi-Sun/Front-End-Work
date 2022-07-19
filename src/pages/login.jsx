@@ -1,5 +1,5 @@
-import "antd/dist/antd.min.css";
-import { LockOutlined, UserOutlined } from "@ant-design/icons";
+import 'antd/dist/antd.min.css';
+import { LockOutlined, UserOutlined } from '@ant-design/icons';
 import {
   Form,
   Input,
@@ -10,11 +10,11 @@ import {
   Checkbox,
   Space,
   Typography,
-} from "antd";
-import styled from "styled-components";
-import React from "react";
-import { useNavigate } from "react-router-dom";
-import { login } from "../api/api";
+} from 'antd';
+import styled from 'styled-components';
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
+import { login } from '../api/api';
 
 const Title = styled.h1`
   text-align: center;
@@ -35,14 +35,14 @@ export default function Login() {
             layout="vertical"
             initialValues={{
               rememberMe: true,
-              role: "student",
+              role: 'student',
             }}
             onFinish={(values) => {
               const result = login(values);
               result.then((res) => {
                 if (res) {
-                  if (res.role === "manager") {
-                    navigate("/dashboard/overview");
+                  if (res.role === 'manager') {
+                    navigate('/dashboard/overview');
                   } else {
                     navigate(`/dashboard/${res.role}`);
                   }
@@ -62,7 +62,7 @@ export default function Login() {
               name="email"
               rules={[
                 { required: true, message: "'email' is required" },
-                { type: "email", message: "'email' is not a valid email" },
+                { type: 'email', message: "'email' is not a valid email" },
               ]}
             >
               <Input

@@ -1,14 +1,14 @@
-import React, { useEffect, useState } from "react";
-import Highcharts from "highcharts";
-import HighchartsReact from "highcharts-react-official";
+import React, { useEffect, useState } from 'react';
+import Highcharts from 'highcharts';
+import HighchartsReact from 'highcharts-react-official';
 
 export default function LanguagesBarChart({ data }) {
   const [options, setOptions] = useState({
     chart: {
-      type: "column",
+      type: 'column',
     },
     title: {
-      text: "Student VS Teacher",
+      text: 'Student VS Teacher',
     },
     subtitle: {
       text: "Comparing what students are interested in and teachers' skills",
@@ -16,7 +16,7 @@ export default function LanguagesBarChart({ data }) {
     yAxis: {
       min: 0,
       title: {
-        text: "Interested VS Skills",
+        text: 'Interested VS Skills',
       },
     },
     legend: {
@@ -41,15 +41,15 @@ export default function LanguagesBarChart({ data }) {
     },
     tooltip: {
       formatter: function () {
-        return this.series.name === "Interest"
-          ? this.series.name + ": " + this.y
+        return this.series.name === 'Interest'
+          ? this.series.name + ': ' + this.y
           : this.x +
-              "<br />" +
+              '<br />' +
               this.series.name +
-              ": " +
+              ': ' +
               this.y +
-              "<br/>" +
-              "Total: " +
+              '<br/>' +
+              'Total: ' +
               this.point.stackTotal;
       },
     },
@@ -57,20 +57,19 @@ export default function LanguagesBarChart({ data }) {
 
   const getLevel = (value) => {
     if (value === 1) {
-      return "Know";
+      return 'Know';
     } else if (value === 2) {
-      return "Practiced";
+      return 'Practiced';
     } else if (value === 3) {
-      return "Comprehend";
+      return 'Comprehend';
     } else if (value === 4) {
-      return "Expert";
+      return 'Expert';
     } else {
-      return "Master";
+      return 'Master';
     }
   };
 
   useEffect(() => {
-    
     if (!data || Object.values(data).some((item) => item === undefined)) return;
 
     const { student, teacher } = data;
@@ -88,7 +87,7 @@ export default function LanguagesBarChart({ data }) {
         currentList.data.push(target ? target.amount : 0);
         return currentList;
       },
-      { name: "Interest", stack: "interest", data: [] }
+      { name: 'Interest', stack: 'interest', data: [] }
     );
 
     const levels = [
@@ -105,13 +104,13 @@ export default function LanguagesBarChart({ data }) {
         (item) =>
           teacher[item]?.find((element) => element.level === level)?.amount || 0
       ),
-      stack: "teacher",
-      stacking: "normal",
+      stack: 'teacher',
+      stacking: 'normal',
     }));
 
     setOptions({
       xAxis: {
-        type: "category",
+        type: 'category',
         labels: {
           rotation: -45,
         },
