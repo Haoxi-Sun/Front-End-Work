@@ -89,7 +89,6 @@ const getCurrentItem = (data) => {
 
 const getChapterExtra = (data, index) => {
   const activeIndex = getCurrentItem(data);
-  //   为什么用index进行判断
   const status = index === activeIndex ? 1 : index < activeIndex ? 0 : 2;
   return <Tag color={courseStatusColors[status]}>{courseStatus[status]}</Tag>;
 };
@@ -99,8 +98,6 @@ export default function CourseDetails() {
   const [data, setData] = useState();
   const [courseInfo, setCourseInfo] = useState([]);
 
-  // 当我用fill(null)或者fill({key: 'id'})，就会有警告
-  // rWarning: Each child in a list should have a unique "key" prop.
   const dataSource = new Array(1).fill({ id: 0 });
   const columns = weekdays.map((title, index) => {
     const target =
@@ -173,10 +170,10 @@ export default function CourseDetails() {
             <StyledH3>Start Time</StyledH3>
             <Row>{data?.startTime}</Row>
 
-            {/* Badge status doesnt work */}
-            <Badge status="success" offset={[5, 24]}>
+            <Badge status="success" dot={true} offset={[5, 24]}>
               <StyledH3>Status</StyledH3>
             </Badge>
+
             <StepsRow>
               <Steps
                 size="small"
@@ -218,7 +215,6 @@ export default function CourseDetails() {
             <StyledH3>Description</StyledH3>
             <Row>{data?.detail}</Row>
 
-            {/* How to get extra */}
             <StyledH3>Chapter</StyledH3>
             <Collapse defaultActiveKey={getCurrentItem(data)}>
               {data?.schedule.chapters.map((chapter, index) => {

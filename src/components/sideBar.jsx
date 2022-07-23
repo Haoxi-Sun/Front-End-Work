@@ -4,7 +4,6 @@ import 'antd/dist/antd.min.css';
 import { Menu } from 'antd';
 import styled from 'styled-components';
 import routesList from './managerRoutes';
-import {isEqual} from 'lodash';
 const { SubMenu } = Menu;
 
 const LogoContainer = styled.div`

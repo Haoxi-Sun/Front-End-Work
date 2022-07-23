@@ -16,6 +16,7 @@ import {
 } from '@ant-design/icons';
 import { Outlet } from 'react-router-dom';
 import CourseDetails from '../pages/courseDetails';
+import Message from '../pages/message';
 
 const routesList = [
   {
@@ -86,6 +87,7 @@ const routesList = [
     label: 'Message',
     path: 'message',
     icon: <MessageOutlined />,
+    element: <Message />
   },
 ];
 

@@ -41,6 +41,7 @@ export default function Login() {
               const result = login(values);
               result.then((res) => {
                 if (res) {
+                  localStorage.setItem('userId', res.userId);
                   if (res.role === 'manager') {
                     navigate('/dashboard/overview');
                   } else {

@@ -81,6 +81,29 @@ function getCourseDetails(params) {
     return res.data;
   });
 }
+
+function getMessages(params) {
+  return get('/message', params).then((res) => {
+    return res.data;
+  });
+}
+
+function getMessageStatistics() {
+  return get('/message/statistics', {}).then((res) => {
+    return res.data;
+  });
+}
+
+function markAsRead(params){
+  return put('/message', {...params, ...{status : 1}}).then(res =>{
+    return res.data;
+  })
+}
+
+function messageEvent(){
+  const userId = localStorage.getItem('userId');
+  return new EventSource(`http://cms.chtoma.com/api/message/subscribe?userId=${userId}`, { withCredentials: true });
+}
 export {
   login,
   logout,
@@ -94,4 +117,8 @@ export {
   getWorld,
   getCourses,
   getCourseDetails,
+  getMessages,
+  getMessageStatistics,
+  markAsRead,
+  messageEvent
 };
