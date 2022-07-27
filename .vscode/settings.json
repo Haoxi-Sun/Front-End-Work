@@ -5,7 +5,9 @@
         "geekblue",
         "highcharts",
         "highmaps",
-        "highstock"
+        "highstock",
+        "noopener",
+        "noreferrer"
     ],
     "cSpell.ignoreWords": [
         "Roboto",

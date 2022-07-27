@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import 'antd/dist/antd.min.css';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -28,6 +28,7 @@ import {
 } from '@ant-design/icons';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { logout, getMessageStatistics } from '../api/api';
+import { MessageStatisticsContent } from './messageProvider';
 const { Title } = Typography;
 const { Option } = Select;
 const { TabPane } = Tabs;
@@ -79,7 +80,7 @@ const TabNavContainer = styled.div`
   }
 `;
 
-function Messages({ type, message }) {
+function Messages({ type, message, onRead, clearAll }) {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [pagination, setPagination] = useState({ limit: 20, page: 1 });
@@ -92,7 +93,7 @@ function Messages({ type, message }) {
     setLoading(true);
     getMessages({ ...pagination, ...{ type: type } }).then((res) => {
       if (res) {
-        setData([...res.messages, ...data]);
+        setData([...data, ...res.messages]);
         setTotal(res.total);
         setLoading(false);
       }
@@ -105,6 +106,25 @@ function Messages({ type, message }) {
     }
   }, [message]);
 
+  useEffect(() => {
+    if (!!clearAll && clearAll === type && data) {
+      const ids = data
+        .filter((item) => item.status === 0)
+        .map((item) => item.id);
+      if (ids.length) {
+        markAsRead({ ids: ids }).then((res) => {
+          if (res) {
+            setData(data.map((item) => ({ ...item, status: 1 })));
+          }
+          if (onRead) {
+            onRead(ids.length);
+          }
+        });
+      } else {
+        message.warn(`All of these ${type}s has been marked as read!`);
+      }
+    }
+  }, [clearAll]);
   return (
     <>
       <InfiniteScroll
@@ -158,6 +178,9 @@ function Messages({ type, message }) {
                       }
                       setData([...data]);
                     }
+                    if (onRead) {
+                      onRead(1);
+                    }
                   });
                 }}
               >
@@ -178,16 +201,22 @@ function Messages({ type, message }) {
 export default function HeaderBar() {
   const navigate = useNavigate();
   const [activeKey, setActiveKey] = useState('notification');
-  const [notificationUnread, setNotificationUnread] = useState(0);
-  const [messageUnread, setMessageUnread] = useState(0);
+  const [clean, setClean] = useState();
   const [message, setMessage] = useState();
+  const { state, dispatch } = useContext(MessageStatisticsContent);
 
   useEffect(() => {
     getMessageStatistics().then((res) => {
       if (res) {
         const { receive, sent } = res;
-        setNotificationUnread(receive.notification.unread);
-        setMessageUnread(receive.message.unread);
+        dispatch({
+          type: 'increment',
+          payload: { type: 'message', count: receive.message.unread },
+        });
+        dispatch({
+          type: 'increment',
+          payload: { type: 'notification', count: receive.notification.unread },
+        });
       }
     });
 
@@ -203,10 +232,18 @@ export default function HeaderBar() {
           });
         }
         setMessage(content);
+        dispatch({
+          type: 'increment',
+          payload: {
+            type: content.type,
+            count: 1,
+          },
+        });
       }
     };
     return () => {
       sse.close();
+      dispatch({ type: 'reset' });
     };
   }, []);
 
@@ -236,11 +273,7 @@ export default function HeaderBar() {
   return (
     <>
       <Row align="middle">
-        <Badge
-          size="small"
-          offset={[-30, 0]}
-          count={notificationUnread + messageUnread}
-        >
+        <Badge size="small" offset={[-30, 0]} count={state.total}>
           <HeaderIcons>
             <Dropdown
               overlayStyle={{
@@ -273,22 +306,44 @@ export default function HeaderBar() {
                     style={{ marginBottom: '0px', padding: '10px 20px 0px' }}
                   >
                     <TabPane
-                      tab={`Notification (${notificationUnread})`}
+                      tab={`Notification (${state.notification})`}
                       key="notification"
                     >
                       <MessageContainer>
-                        <Messages type="notification" message={message} />
+                        <Messages
+                          type="notification"
+                          message={message}
+                          clearAll={clean}
+                          onRead={(count) =>
+                            dispatch({
+                              type: 'decrement',
+                              payload: { type: 'notification', count },
+                            })
+                          }
+                        />
                       </MessageContainer>
                     </TabPane>
-                    <TabPane tab={`Message (${messageUnread})`} key="message">
+                    <TabPane tab={`Message (${state.message})`} key="message">
                       <MessageContainer>
-                        <Messages type="message" message={message} />
+                        <Messages
+                          type="message"
+                          message={message}
+                          clearAll={clean}
+                          onRead={(count) =>
+                            dispatch({
+                              type: 'decrement',
+                              payload: { type: 'message', count },
+                            })
+                          }
+                        />
                       </MessageContainer>
                     </TabPane>
                   </Tabs>
                   <Footer justify="space-between" align="middle">
                     <Col span={12}>
-                      <Button>Mark all as read</Button>
+                      <Button onClick={() => setClean(activeKey)}>
+                        Mark all as read
+                      </Button>
                     </Col>
                     <Col span={12}>
                       <Button>

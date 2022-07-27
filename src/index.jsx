@@ -8,6 +8,7 @@ import {
 } from 'react-router-dom';
 import Login from './pages/login';
 import Layout from './components/layout';
+import { MessageStatistics } from './components/messageProvider';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -15,7 +16,8 @@ root.render(
     <Routes>
       <Route path="/" element={<Navigate to="/login" />} />
       <Route path="/login" element={<Login />} />
-      <Route path="dashboard/*" element={<Layout />} />
+      
+      <Route path="dashboard/*" element={<MessageStatistics><Layout /></MessageStatistics>} />
       <Route path="*" element={<Navigate to="dashboard/" />} />
     </Routes>
   </Router>
