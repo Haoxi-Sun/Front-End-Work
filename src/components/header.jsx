@@ -29,9 +29,12 @@ import {
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { logout, getMessageStatistics } from '../api/api';
 import { MessageStatisticsContent } from './messageProvider';
+import { formatDistanceToNow } from 'date-fns';
+
 const { Title } = Typography;
 const { Option } = Select;
 const { TabPane } = Tabs;
+
 const Footer = styled(Row)`
   height: 50px;
   position: absolute;
@@ -132,7 +135,7 @@ function Messages({ type, message, onRead, clearAll }) {
         next={() => setPagination({ ...pagination, page: pagination.page + 1 })}
         hasMore={data.length < total}
         loader={
-          <div>
+          <div style={{textAlign: 'center'}}>
             <Spin size="large" />
           </div>
         }
@@ -148,7 +151,11 @@ function Messages({ type, message, onRead, clearAll }) {
                 style={{ opacity: item.status ? 0.4 : 1 }}
                 key={item?.createdAt}
                 actions={[
-                  <Space key={item?.createdAt}>{item?.createdAt}</Space>,
+                  <Space key={item?.createdAt}>
+                    {formatDistanceToNow(new Date(item?.createdAt), {
+                      addSuffix: true,
+                    })}
+                  </Space>,
                 ]}
                 extra={
                   <Space>
