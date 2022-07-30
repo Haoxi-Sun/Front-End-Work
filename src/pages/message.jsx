@@ -1,8 +1,6 @@
 import React, { useEffect, useState, useContext } from 'react';
-import { flatten } from 'lodash';
 import 'antd/dist/antd.min.css';
 import { Row, Col, Typography, Select, List, Avatar, Space, Spin } from 'antd';
-import styled from 'styled-components';
 import { getMessages, markAsRead } from '../api/api';
 import {
   UserOutlined,
@@ -12,6 +10,8 @@ import {
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { MessageStatisticsContent } from '../components/messageProvider';
 import { format } from 'date-fns';
+import { flatten } from 'lodash';
+
 const { Title } = Typography;
 const { Option } = Select;
 
@@ -25,26 +25,40 @@ const selectorStyle = {
 
 export default function Message() {
   const [data, setData] = useState([]);
-  const [loading, setLoading] = useState(false);
   const [pagination, setPagination] = useState({ limit: 20, page: 1 });
   const [type, setType] = useState(null);
   const [total, setTotal] = useState(0);
   const { dispatch } = useContext(MessageStatisticsContent);
+  const [source, setSource] = useState([]);
+  const [dataSource, setDataSource] = useState([]);
 
   useEffect(() => {
-    if (loading) {
-      return;
-    }
-    setLoading(true);
     getMessages({ ...pagination, ...{ type: type } }).then((res) => {
       if (res) {
-        setData([...data, ...res.messages]);
+        setData((pre) => [...pre, ...res.messages]);
         setTotal(res.total);
-        setLoading(false);
       }
     });
   }, [pagination, type]);
 
+  useEffect(() => {
+    const result = data.reduce((acc, cur) => {
+      const key = format(new Date(cur.createdAt), 'yyyy-MM-dd');
+      if (!acc[key]) {
+        acc[key] = [cur];
+      } else {
+        acc[key].push(cur);
+      }
+      return acc;
+    }, []);
+
+    const flattenData = Object.entries(result).sort(
+      (pre, next) => new Date(next[0]).getTime() - new Date(pre[0]).getTime()
+    );
+
+    setSource(result);
+    setDataSource(flattenData);
+  }, [data]);
   return (
     <>
       <Row align="middle" style={{ position: 'sticky' }}>
@@ -59,6 +73,8 @@ export default function Message() {
               setType(value);
               setPagination({ ...pagination, page: 1 });
               setData([]);
+              setDataSource([]);
+              setSource([]);
             }}
           >
             <Option value={null}>All</Option>
@@ -68,14 +84,16 @@ export default function Message() {
         </Col>
       </Row>
       <div
-        style={{ padding: '0 20px', overflowY: 'scroll', maxHeight: '75vh' }}
+        id="scrollDiv"
+        style={{ maxHeight: '75vh', padding: '0 20px', overflowY: 'scroll' }}
       >
         <InfiniteScroll
-          dataLength={data.length}
+          dataLength={flatten(Object.values(source)).length}
+          scrollableTarget="scrollDiv"
           next={() =>
             setPagination({ ...pagination, page: pagination.page + 1 })
           }
-          hasMore={data.length < total}
+          hasMore={flatten(Object.values(source)).length < total}
           loader={
             <div style={{ textAlign: 'center' }}>
               <Spin size="large" />
@@ -86,56 +104,63 @@ export default function Message() {
         >
           <List
             itemLayout="vertical"
-            dataSource={data}
-            renderItem={(item) => (
+            dataSource={dataSource}
+            renderItem={([date, values]) => (
               <>
-                <List.Item
-                  style={{ opacity: item.status ? 0.4 : 1 }}
-                  key={item?.createdAt}
-                  actions={[
-                    <Space key={item?.createdAt}>{item?.createdAt}</Space>,
-                  ]}
-                  extra={
-                    <Space>
-                      {item?.type === 'message' ? (
-                        <MessageOutlined />
-                      ) : (
-                        <AlertOutlined />
-                      )}
-                    </Space>
-                  }
-                  onClick={() => {
-                    if (item?.status === 1) return;
-                    markAsRead({ ids: [item?.id] }).then((res) => {
-                      if (res) {
-                        try {
-                          const result = values.find(
-                            (value) => value.id === item.id
-                          );
+                <Space size="large">
+                  <Typography.Title level={4}>{date}</Typography.Title>
+                </Space>
+                {values.map((item) => (
+                  <List.Item
+                    style={{ opacity: item.status ? 0.4 : 1 }}
+                    key={item?.createdAt}
+                    actions={[
+                      <Space key={item?.createdAt}>{item?.createdAt}</Space>,
+                    ]}
+                    extra={
+                      <Space>
+                        {item?.type === 'message' ? (
+                          <MessageOutlined />
+                        ) : (
+                          <AlertOutlined />
+                        )}
+                      </Space>
+                    }
+                    onClick={() => {
+                      if (item?.status === 1) return;
+                      markAsRead({ ids: [item?.id] }).then((res) => {
+                        if (res) {
+                          try {
+                            dataSource.forEach(([_, values]) => {
+                              const result = values.find(
+                                (value) => value.id === item.id
+                              );
 
-                          if (!!result) {
-                            result.status = 1;
+                              if (!!result) {
+                                result.status = 1;
+                              }
+                            });
+                          } catch (err) {
+                            if (err) {
+                              throw new Error('just end loop');
+                            }
                           }
-                        } catch (err) {
-                          if (err) {
-                            throw new Error('just end loop');
-                          }
+                          setDataSource([...dataSource]);
+                          dispatch({
+                            type: 'decrement',
+                            payload: { count: 1, type: item.type },
+                          });
                         }
-                        setDataSource([...dataSource]);
-                        dispatch({
-                          type: 'decrement',
-                          payload: { count: 1, type: item.type },
-                        });
-                      }
-                    });
-                  }}
-                >
-                  <List.Item.Meta
-                    avatar={<Avatar icon={<UserOutlined />} />}
-                    title={item?.from?.nickname}
-                    description={item?.content}
-                  />
-                </List.Item>
+                      });
+                    }}
+                  >
+                    <List.Item.Meta
+                      avatar={<Avatar icon={<UserOutlined />} />}
+                      title={item?.from?.nickname}
+                      description={item?.content}
+                    />
+                  </List.Item>
+                ))}
               </>
             )}
           />

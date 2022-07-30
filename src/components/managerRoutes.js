@@ -17,6 +17,7 @@ import {
 import { Outlet } from 'react-router-dom';
 import CourseDetails from '../pages/courseDetails';
 import Message from '../pages/message';
+import AddCourse from '../pages/addCourse';
 
 const routesList = [
   {
@@ -74,6 +75,7 @@ const routesList = [
       {
         path: 'courses/add-course',
         label: 'Add Course',
+        element: <AddCourse />,
         icon: <FileAddOutlined />,
       },
       {

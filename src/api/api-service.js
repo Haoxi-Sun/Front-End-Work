@@ -55,7 +55,6 @@ async function get(path, params) {
     .get(url, { params: params })
     .then((res) => res.data)
     .catch((error) => {
-      message.error(error.response?.data.msg);
       return error;
     });
 }

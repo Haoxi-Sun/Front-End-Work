@@ -60,6 +60,7 @@ const Footer = styled(Row)`
     border: none;
   }
 `;
+
 const HeaderIcons = styled.span`
   font-size: 18px;
   color: rgb(255, 255, 255);
@@ -85,20 +86,14 @@ const TabNavContainer = styled.div`
 
 function Messages({ type, message, onRead, clearAll }) {
   const [data, setData] = useState([]);
-  const [loading, setLoading] = useState(false);
   const [pagination, setPagination] = useState({ limit: 20, page: 1 });
   const [total, setTotal] = useState(0);
-  //status 1 - read , 0 -unread
+
   useEffect(() => {
-    if (loading) {
-      return;
-    }
-    setLoading(true);
     getMessages({ ...pagination, ...{ type: type } }).then((res) => {
       if (res) {
         setData([...data, ...res.messages]);
         setTotal(res.total);
-        setLoading(false);
       }
     });
   }, [pagination]);
@@ -128,80 +123,78 @@ function Messages({ type, message, onRead, clearAll }) {
       }
     }
   }, [clearAll]);
-  return (
-    <>
-      <InfiniteScroll
-        dataLength={data.length}
-        next={() => setPagination({ ...pagination, page: pagination.page + 1 })}
-        hasMore={data.length < total}
-        loader={
-          <div style={{textAlign: 'center'}}>
-            <Spin size="large" />
-          </div>
-        }
-        endMessage={<div>It is all, nothing more 🤐</div>}
-        style={{ overflow: 'hidden' }}
-      >
-        <List
-          itemLayout="vertical"
-          dataSource={data}
-          renderItem={(item) => {
-            return (
-              <List.Item
-                style={{ opacity: item.status ? 0.4 : 1 }}
-                key={item?.createdAt}
-                actions={[
-                  <Space key={item?.createdAt}>
-                    {formatDistanceToNow(new Date(item?.createdAt), {
-                      addSuffix: true,
-                    })}
-                  </Space>,
-                ]}
-                extra={
-                  <Space>
-                    {item?.type === 'notification' ? (
-                      <AlertOutlined />
-                    ) : (
-                      <MessageOutlined />
-                    )}
-                  </Space>
-                }
-                onClick={() => {
-                  if (item?.status === 1) return;
-                  markAsRead({ ids: [item?.id] }).then((res) => {
-                    if (res) {
-                      try {
-                        const result = data.find(
-                          (value) => value.id === item.id
-                        );
 
-                        if (!!result) {
-                          result.status = 1;
-                        }
-                      } catch (err) {
-                        if (err) {
-                          throw new Error('just end loop');
-                        }
+  return (
+    <InfiniteScroll
+      scrollableTarget={type}
+      dataLength={data.length}
+      next={() => setPagination({ ...pagination, page: pagination.page + 1 })}
+      hasMore={data.length < total}
+      loader={
+        <div style={{ textAlign: 'center' }}>
+          <Spin size="large" />
+        </div>
+      }
+      endMessage={<div>It is all, nothing more 🤐</div>}
+      style={{ overflow: 'hidden' }}
+    >
+      <List
+        itemLayout="vertical"
+        dataSource={data}
+        renderItem={(item) => {
+          return (
+            <List.Item
+              style={{ opacity: item.status ? 0.4 : 1 }}
+              key={item?.createdAt}
+              actions={[
+                <Space key={item?.createdAt}>
+                  {formatDistanceToNow(new Date(item?.createdAt), {
+                    addSuffix: true,
+                  })}
+                </Space>,
+              ]}
+              extra={
+                <Space>
+                  {item?.type === 'notification' ? (
+                    <AlertOutlined />
+                  ) : (
+                    <MessageOutlined />
+                  )}
+                </Space>
+              }
+              onClick={() => {
+                if (item?.status === 1) return;
+                markAsRead({ ids: [item?.id] }).then((res) => {
+                  if (res) {
+                    try {
+                      const result = data.find((value) => value.id === item.id);
+
+                      if (!!result) {
+                        result.status = 1;
                       }
-                      setData([...data]);
+                    } catch (err) {
+                      if (err) {
+                        throw new Error('just end loop');
+                      }
                     }
-                    if (onRead) {
-                      onRead(1);
-                    }
-                  });
-                }}
-              >
-                <List.Item.Meta
-                  avatar={<Avatar icon={<UserOutlined />} />}
-                  title={item?.from?.nickname}
-                  description={item?.content}
-                />
-              </List.Item>
-            );
-          }}
-        />
-      </InfiniteScroll>
-    </>
+                    setData([...data]);
+                  }
+                  if (onRead) {
+                    onRead(1);
+                  }
+                });
+              }}
+            >
+              <List.Item.Meta
+                avatar={<Avatar icon={<UserOutlined />} />}
+                title={item?.from?.nickname}
+                description={item?.content}
+              />
+            </List.Item>
+          );
+        }}
+      />
+    </InfiniteScroll>
   );
 }
 
@@ -215,7 +208,7 @@ export default function HeaderBar() {
   useEffect(() => {
     getMessageStatistics().then((res) => {
       if (res) {
-        const { receive, sent } = res;
+        const { receive } = res;
         dispatch({
           type: 'increment',
           payload: { type: 'message', count: receive.message.unread },
@@ -316,10 +309,11 @@ export default function HeaderBar() {
                       tab={`Notification (${state.notification})`}
                       key="notification"
                     >
-                      <MessageContainer>
+                      <MessageContainer id="notification">
                         <Messages
                           type="notification"
                           message={message}
+                          scrollTarget="notification"
                           clearAll={clean}
                           onRead={(count) =>
                             dispatch({
@@ -331,9 +325,10 @@ export default function HeaderBar() {
                       </MessageContainer>
                     </TabPane>
                     <TabPane tab={`Message (${state.message})`} key="message">
-                      <MessageContainer>
+                      <MessageContainer id="message">
                         <Messages
                           type="message"
+                          scrollTarget="message"
                           message={message}
                           clearAll={clean}
                           onRead={(count) =>

@@ -30,21 +30,14 @@ const backTopIcon = {
 
 export default function Courses() {
   const [data, setData] = useState([]);
-  const [loading, setLoading] = useState(false);
   const [pagination, setPagination] = useState({ limit: 20, page: 1 });
   const [total, setTotal] = useState(0);
 
   useEffect(() => {
-    if (loading) {
-      return;
-    }
-
-    setLoading(true);
     getCourses(pagination).then((res) => {
       if (res) {
         setTotal(res.total);
         setData([...data, ...res.courses]);
-        setLoading(false);
       }
     });
   }, [pagination]);
