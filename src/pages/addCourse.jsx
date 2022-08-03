@@ -20,8 +20,8 @@ export default function AddCourse() {
         <Step title="Course Schedule" status="wait" />
         <Step title="Success" status="wait" />
       </Steps>
-      <div style={{ display: 'block' }}>
-       <AddCourseForm />
+      <div style={{ display: 'block' , marginLeft: '24px'}}>
+       <AddCourseForm isAdd={true} />
       </div>
     </>
   );

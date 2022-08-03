@@ -18,6 +18,7 @@ import { Outlet } from 'react-router-dom';
 import CourseDetails from '../pages/courseDetails';
 import Message from '../pages/message';
 import AddCourse from '../pages/addCourse';
+import EditCourse from '../pages/editCourse';
 
 const routesList = [
   {
@@ -82,6 +83,7 @@ const routesList = [
         path: 'courses/edit-course',
         label: 'Edit Course',
         icon: <EditOutlined />,
+        element: <EditCourse />,
       },
     ],
   },

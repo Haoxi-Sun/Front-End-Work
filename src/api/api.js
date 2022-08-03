@@ -101,7 +101,8 @@ function markAsRead(params) {
 }
 
 function messageEvent() {
-  const userId = localStorage.getItem('userId');
+  const userId = parseInt(localStorage.getItem('userId'));
+ 
   return new EventSource(
     `http://cms.chtoma.com/api/message/subscribe?userId=${userId}`,
     { withCredentials: true }
@@ -114,10 +115,34 @@ function getTeachers(params) {
   });
 }
 
-function getCoursesType() {
-  return get('/courses', {}).then((res) => {
+function getCourseTypes() {
+  return get('/courses/type', {}).then((res) => {
     return res.data;
   });
+}
+
+function getCourseCode() {
+  return get('/courses/code', {}).then((res) => {
+    return res.data;
+  });
+}
+
+function addCourses(params){
+  return post('/courses', params).then(res => {
+    return res.data;
+;  })
+}
+
+function updateCourses(params){
+  return put('/courses', params).then(res => {
+    return res.data;
+  });
+}
+
+function getCourseSchedule(params){
+  return get('/courses/schedule', params).then(res => {
+    return res.data;
+  })
 }
 export {
   login,
@@ -137,6 +162,9 @@ export {
   markAsRead,
   messageEvent,
   getTeachers,
-  getCoursesType
-  
+  getCourseTypes,
+  getCourseCode,
+  addCourses,
+  updateCourses,
+  getCourseSchedule
 };

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import 'antd/dist/antd.min.css';
 import styled from 'styled-components';
 import {
@@ -13,11 +13,19 @@ import {
   DatePicker,
   InputNumber,
   Button,
+  Modal,
 } from 'antd';
 import { InboxOutlined } from '@ant-design/icons';
 import ImgCrop from 'antd-img-crop';
-import { getCoursesType, getTeachers } from '../api/api';
+import {
+  getCourseTypes,
+  getTeachers,
+  getCourseCode,
+  addCourses,
+  updateCourses,
+} from '../api/api';
 import moment from 'moment';
+import _debounce from 'lodash.debounce';
 
 const { Option } = Select;
 
@@ -97,54 +105,122 @@ const UploadInner = styled.div`
   }
 `;
 
-export default function AddCourseForm() {
+export default function AddCourseForm({ isAdd, course }) {
   const [form] = Form.useForm();
   const [teachers, setTeachers] = useState([]);
+  const [teacherId, setTeacherId] = useState();
   const [isTeacherSearching, setIsTeacherSearching] = useState(false);
-  const [courses, setCourses] = useState([]);
+  const [courseTypes, setCourseTypes] = useState([]);
   const [fileList, setFileList] = useState([]);
+  const [preview, setPreview] = useState();
+  const [durationUnit, setDurationUnit] = useState(1);
+  const [isAddCourse, setIsAddCourse] = useState(isAdd);
+  const debouncedQuery = useCallback(
+    _debounce(handleDebounceFunction, 500),
+    []
+  );
 
   useEffect(() => {
-    getCoursesType().then((res) => {
+    getCourseTypes().then((res) => {
       if (res) {
-        setCourses(res.courses);
+        setCourseTypes(res);
       }
     });
-  }, []);
 
-  const onPreview = async (file) => {
-    let src = file.url;
-
-    if (!src) {
-      src = await new Promise((resolve) => {
-        const reader = new FileReader();
-        reader.readAsDataURL(file.originFileObj);
-
-        reader.onload = () => resolve(reader.result);
+    if (isAddCourse) {
+      getCourseCode().then((res) => {
+        if (res) {
+          const uid = res;
+          form.setFieldsValue({ uid });
+        }
       });
     }
+  }, []);
+
+  useEffect(() => {
+    if (!!course) {
+      const courseInfo = course[0];
+      const courseDetail = {
+        ...courseInfo,
+        type: courseInfo.type.map((item) => item.id),
+        startTime: moment(courseInfo.startTime),
+        teacherId: courseInfo.teacherName,
+      };
+
+      setDurationUnit(courseInfo.durationUnit);
+      form.setFieldsValue(courseDetail);
+      setFileList([{ name: 'Cover Image', url: courseInfo.cover }]);
+    }
+  }, [course, durationUnit]);
+
+  function handleDebounceFunction(debounceValue) {
+    getTeachers({ query: debounceValue }).then((res) => {
+      if (res) {
+        setTeachers(res.teachers);
+      } else {
+        message.error('Teacher Not Found');
+      }
+    });
+  }
+
+  const onPreview = async (file) => {
+    if (!file.url && !file.preview) {
+      file.preview = await new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file.originFileObj);
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = (error) => reject(error);
+      });
+    }
+    setPreview({
+      previewImage: file.url || file.preview,
+      previewTitle:
+        file.name || file.url.substring(file.url.lastIndexOf('/') + 1),
+    });
   };
 
-  const filterCoursesType = (data) => {
-    let obj = {};
-    const coursesType = data.map((course) => course.type).flat();
-    const uniqueTypes = coursesType.reduce((pre, cur) => {
-      if (!obj[cur.name.toLowerCase()]) {
-        obj[cur.name.toLowerCase()] = [cur.name];
-        pre.push(cur);
-      }
-      return pre;
-    }, []);
-    return uniqueTypes;
+  const handleFinish = (event) => {
+    if (!isAdd && !course) {
+      message.error('You must select a course to update!');
+      return;
+    }
+
+    const courseRequest = {
+      ...event,
+      durationUnit: durationUnit,
+      teacherId: event.teacherId || course[0].teacherId,
+      startTime: moment(event.startTime).format('YYYY-MM-DD HH:mm:ss'),
+      cover: event.cover  === undefined ? "" : event.cover,
+    };
+
+    if (isAdd) {
+      addCourses(courseRequest).then((res) => {
+        if (!!res && !course) {
+            setIsAddCourse(false);
+        }
+      });
+    }else{
+        updateCourses({...courseRequest, id: course[0].id}).then(res => {
+            if (!!res && !course) {
+                setIsAddCourse(false);
+            }
+        })
+    }
   };
 
   return (
     <>
-      <Form form={form} layout="vertical">
-        <Row style={{ marginBottom: '8px' }}>
-          <Col span={8} style={{ paddingLeft: '24px' }}>
+      <Form
+        form={form}
+        layout="vertical"
+        onFinish={handleFinish}
+        labelCol={{ offset: 1 }}
+        labelWrap={{ offset: 1 }}
+      >
+        <Row gutter={[6, 16]}>
+          <Col span={8}>
             <Form.Item
-              name="courseName"
+              name="name"
               label="Course Name"
               rules={[
                 {
@@ -153,44 +229,45 @@ export default function AddCourseForm() {
                 {
                   min: 3,
                   max: 100,
-                  message: "'name' must be between 3 and 100 characters",
                 },
               ]}
             >
               <Input placeholder="Course name" />
             </Form.Item>
           </Col>
+
           <Col span={16}>
-            <Row>
-              <Col span={8} style={{ paddingLeft: '24px' }}>
+            <Row gutter={[6, 16]}>
+              <Col span={8}>
                 <Form.Item
-                  name="teacher"
+                  name="teacherId"
                   label="Teacher"
                   rules={[
                     {
                       required: true,
                     },
                   ]}
+                  style={{ marginLeft: 5 }}
                 >
                   <Select
                     showSearch
                     placeholder="Select teacher"
-                    defaultActiveFirstOption={false}
+                    value={course ? course[0].teacherId : teacherId}
                     notFoundContent={
                       isTeacherSearching ? <Spin size="small" /> : null
                     }
                     filterOption={false}
+                    allowClear
                     onSearch={(query) => {
-                      setIsTeacherSearching(true);
-                      getTeachers({ query: query }).then((res) => {
-                        if (res) {
-                          setTeachers(res.teachers);
-                        } else {
-                          message.error('Teacher Not Found');
-                        }
+                      if (!query) {
+                        return;
+                      } else {
+                        setIsTeacherSearching(true);
+                        debouncedQuery(query);
                         setIsTeacherSearching(false);
-                      });
+                      }
                     }}
+                    onSelect={(value) => setTeacherId(value)}
                   >
                     {teachers.map((teacher) => (
                       <Option key={teacher.id} value={teacher.id}>
@@ -210,14 +287,13 @@ export default function AddCourseForm() {
                       required: true,
                     },
                   ]}
-                  style={{ paddingLeft: '24px' }}
                 >
                   <Select
                     mode="multiple"
                     defaultActiveFirstOption={false}
                     placeholder="Type"
                   >
-                    {filterCoursesType(courses).map((type) => (
+                    {courseTypes.map((type) => (
                       <Option key={type.id} value={type.id}>
                         {type.name}
                       </Option>
@@ -226,10 +302,9 @@ export default function AddCourseForm() {
                 </Form.Item>
               </Col>
 
-              {/* get uid from courses uid? */}
-              <Col span={8} style={{ paddingLeft: '24px' }}>
+              <Col span={8}>
                 <Form.Item
-                  name="courseCode"
+                  name="uid"
                   label="Course Code"
                   rules={[
                     {
@@ -237,21 +312,24 @@ export default function AddCourseForm() {
                     },
                   ]}
                 >
-                  <Input disabled placeholder="Course Code" />
+                  <Input disabled placeholder="Course Code" type="text" />
                 </Form.Item>
               </Col>
             </Row>
           </Col>
         </Row>
 
-        <Row style={{ marginTop: '40px' }}>
-          <Col span={8} style={{ paddingLeft: '24px' }}>
+        <Row gutter={[6, 16]}>
+          <Col span={8}>
             <Form.Item
-              name="startDate"
+              name="startTime"
               label="Start Date"
               rules={[
                 {
                   required: true,
+                },
+                {
+                  type: 'object',
                 },
               ]}
             >
@@ -260,7 +338,7 @@ export default function AddCourseForm() {
                 placeholder="Select date"
                 format="YYYY-MM-DD"
                 disabledDate={(current) => {
-                  return current && current < moment().endOf('day');
+                  return current && current <= moment().startOf('day');
                 }}
               />
             </Form.Item>
@@ -273,10 +351,10 @@ export default function AddCourseForm() {
                 },
               ]}
             >
-              <Input prefix="$" />
+              <InputNumber prefix="$" style={{width: '100%'}}/>
             </Form.Item>
             <Form.Item
-              name="studentLimit"
+              name="maxStudents"
               label="Student Limit"
               rules={[
                 {
@@ -284,7 +362,7 @@ export default function AddCourseForm() {
                 },
               ]}
             >
-              <InputNumber style={{ width: '100%' }} />
+              <InputNumber min={0} style={{ width: '100%' }} />
             </Form.Item>
             <Form.Item
               name="duration"
@@ -298,34 +376,44 @@ export default function AddCourseForm() {
               <InputNumber
                 style={{ width: '100%' }}
                 addonAfter={
-                  <Select defaultValue="months">
-                    <Option value="years">Year(s)</Option>
-                    <Option value="months">Month(s)</Option>
-                    <Option value="days">Day(s)</Option>
-                    <Option value="weeks">Week(s)</Option>
-                    <Option value="hours">Hour(s)</Option>
+                  <Select
+                    name="durationUnit"
+                    value={durationUnit}
+                    onChange={(value) => setDurationUnit(value)}
+                  >
+                    <Option value={1}>Year(s)</Option>
+                    <Option value={2}>Month(s)</Option>
+                    <Option value={3}>Day(s)</Option>
+                    <Option value={4}>Week(s)</Option>
+                    <Option value={5}>Hour(s)</Option>
                   </Select>
                 }
                 min={1}
               />
             </Form.Item>
           </Col>
-          <Col span={8} style={{ paddingLeft: '24px', position: 'relative' }}>
+          <Col span={8} style={{ position: 'relative' }}>
             <DescriptionTextArea
-              name="description"
+              name="detail"
               label="Description"
               rules={[
                 {
                   required: true,
+                },
+                {
+                  min: 100,
+                  max: 1000,
+                  message:
+                    'Description length must between 100 - 1000 characters.',
                 },
               ]}
             >
               <Input.TextArea style={{ height: '100%' }} />
             </DescriptionTextArea>
           </Col>
-          <Col span={8} style={{ paddingLeft: '24px', position: 'relative' }}>
+          <Col span={8} style={{ position: 'relative' }}>
             <UploadItem name="cover" label="Cover">
-              <ImgCrop>
+              <ImgCrop rotate={true}>
                 <Upload
                   action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
                   listType="picture-card"
@@ -347,13 +435,27 @@ export default function AddCourseForm() {
           </Col>
         </Row>
         <Row>
-            <Col style={{ paddingLeft: '24px' }}>
-                <Form.Item name="submitButton">
-                    <Button type='primary' htmlType='submit'>Create Course</Button>
-                </Form.Item>
-            </Col>
+          <Col>
+            <Form.Item>
+              <Button type="primary" htmlType="submit">
+                {isAddCourse ? 'Create Course' : 'Update Course'}
+              </Button>
+            </Form.Item>
+          </Col>
         </Row>
       </Form>
+      <Modal
+        visible={!!preview}
+        title={preview?.previewTitle}
+        footer={null}
+        onCancel={() => setPreview(null)}
+      >
+        <img
+          alt="example"
+          style={{ width: '100%' }}
+          src={preview?.previewImage}
+        />
+      </Modal>
     </>
   );
 }
