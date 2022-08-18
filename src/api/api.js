@@ -144,9 +144,22 @@ function getCourseSchedule(params){
     return res.data;
   })
 }
+
+function getClassSchedule(){
+  return get('/class/schedule', {userId: localStorage.getItem('userId')}).then(res => {
+    return  res.data;
+  })
+}
+
+function signUp(params){
+  return post('/signup', params).then(res =>{
+    return res.data;
+  })
+}
 export {
   login,
   logout,
+  signUp,
   addStudent,
   editStudent,
   deleteStudent,
@@ -166,5 +179,6 @@ export {
   getCourseCode,
   addCourses,
   updateCourses,
-  getCourseSchedule
+  getCourseSchedule,
+  getClassSchedule,
 };

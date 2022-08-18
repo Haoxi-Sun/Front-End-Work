@@ -28,7 +28,7 @@ import {
 } from '@ant-design/icons';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { logout, getMessageStatistics } from '../api/api';
-import { MessageStatisticsContent } from './messageProvider';
+import { MessageStatisticsContent } from './manager/messageProvider';
 import { formatDistanceToNow } from 'date-fns';
 
 const { Title } = Typography;

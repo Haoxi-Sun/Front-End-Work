@@ -9,7 +9,7 @@ const axiosInstance = axios.create({
 axiosInstance.defaults.timeout = 100000;
 
 axiosInstance.interceptors.request.use((config) => {
-  if (!config.url.includes('login')) {
+  if (!config.url.includes('login') && !config.url.includes('signup')) {
     const token = JSON.parse(localStorage.getItem('Data')).token;
     config.headers.Authorization = `Bearer ${token}`;
   }
@@ -20,7 +20,7 @@ async function post(path, params) {
   const url = baseURL + path;
   return axiosInstance
     .post(url, params)
-    .then((res) => res.data)
+    .then((res) =>  res.data)
     .catch((error) => {
       message.error(error.response.data.msg);
       return error;

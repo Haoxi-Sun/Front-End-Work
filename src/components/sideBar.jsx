@@ -3,7 +3,6 @@ import { Link, useLocation } from 'react-router-dom';
 import 'antd/dist/antd.min.css';
 import { Menu } from 'antd';
 import styled from 'styled-components';
-import routesList from './managerRoutes';
 const { SubMenu } = Menu;
 
 const LogoContainer = styled.div`
@@ -63,11 +62,11 @@ const generateFactory = (fn) => {
 
 const getKeyPathInfo = (data) => {
   const getPaths = generateFactory(generatePath);
-  const paths = getPaths(routesList)
+  const paths = getPaths(data)
     .flat()
     .map((item) => ['/dashboard', item].filter((item) => !!item).join('/'));
   const getKeys = generateFactory(generateKey);
-  const keys = getKeys(routesList).flat();
+  const keys = getKeys(data).flat();
   return { keys, paths };
 };
 
@@ -86,7 +85,7 @@ const getRootSubmenuKeys = (data) => {
   return keys;
 };
 
-export default function SideBar() {
+export default function SideBar({routesList}) {
   const path = useLocation().pathname;
   const activeRoutes = omitDetailPath(path);
   const { keys, paths } = getKeyPathInfo(routesList);

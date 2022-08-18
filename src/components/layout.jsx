@@ -6,7 +6,8 @@ import { MenuFoldOutlined } from '@ant-design/icons';
 import { Breadcrumb, Layout } from 'antd';
 import { useLocation, useRoutes } from 'react-router-dom';
 import styled from 'styled-components';
-import routesList from './managerRoutes';
+import managerRoutes from './manager/managerRoutes';
+import teacherRoutes from './teacher/teacherRoutes';
 
 const { Header, Sider, Content } = Layout;
 
@@ -105,15 +106,27 @@ const foundPath = (data, path) => {
     .filter(Boolean);
 };
 
+const getRoutesList = (role) => {
+  if (role === 'manager') {
+    return managerRoutes;
+  } else if (role === 'teacher') {
+    return teacherRoutes;
+  }
+};
+
 export default function DashLayout() {
   const [collapsed, setCollapsed] = useState(false);
-  const routesTree = useRoutes(routesList);
   const location = useLocation();
+  const role = localStorage.getItem('role');
+  const routesList = getRoutesList(role);
+  const routesTree = useRoutes(routesList);
+
   const path = location.pathname;
   const splitPaths = path.split('/').slice(1);
-  const root = splitPaths.slice(1, 3).join('/');
-  const filteredPath = isDetailPath(root) ? `${splitPaths[1]}/:id` : root;
-
+  const root = splitPaths.slice(1).join('/');
+  const filteredPath = isDetailPath(root)
+    ? `manager/${splitPaths[2]}/:id`
+    : root;
   const search = deepSearchRecordFactory(predicateFn, filteredPath, 'children');
   const nodes = search(routesList, []);
 
@@ -124,7 +137,7 @@ export default function DashLayout() {
         collapsed={collapsed}
         onCollapse={(value) => setCollapsed(value)}
       >
-        <SideBar />
+        <SideBar routesList={routesList} />
       </SiderStyle>
 
       <Layout className="site-layout">
@@ -143,17 +156,18 @@ export default function DashLayout() {
 
         <Breadcrumb style={{ margin: '0 16px', padding: '16px' }}>
           <Breadcrumb.Item>
-            <a href="../overview">CMS MANAGER SYSTEM</a>
+            <a href="../manager/overview">CMS MANAGER SYSTEM</a>
           </Breadcrumb.Item>
           {nodes.map((item, index) => {
             const key = generateKey(item, index);
+
             if (item.path !== undefined && item.path.includes('/:id')) {
-              const mainPath = item.path.split('/')[0];
+              const mainPath = 'manager/' + item.path.split('/')[1];
               const mainLabel = foundPath(routesList, mainPath);
               return (
                 <>
                   <Breadcrumb.Item key={mainPath}>
-                    <a href={`../${mainPath}`}>{mainLabel}</a>
+                    <a href={`/dashboard/${mainPath}`}>{mainLabel}</a>
                   </Breadcrumb.Item>
                   <Breadcrumb.Item key={item.path}>Detail</Breadcrumb.Item>
                 </>
@@ -162,7 +176,7 @@ export default function DashLayout() {
             return (
               <Breadcrumb.Item key={key}>
                 {item.path ? (
-                  <a href={item.path}>{item.label}</a>
+                  <a href={`../${item.path}`}>{item.label}</a>
                 ) : (
                   <>{item.label}</>
                 )}
