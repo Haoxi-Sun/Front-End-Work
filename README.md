@@ -1,1 +1,1 @@
-
+1. 当我点击Edit 在Manager-Teacher List里面，skills显示不出来或者是显示有错误。
