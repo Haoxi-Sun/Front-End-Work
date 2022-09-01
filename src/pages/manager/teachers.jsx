@@ -1,10 +1,11 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import 'antd/dist/antd.min.css';
-import { Button, Input, Space, Table, Popconfirm, Modal } from 'antd';
+import { Button, Input, Space, Table, Popconfirm, Modal, Form } from 'antd';
 import TeacherForm from '../../components/manager/teacherForm';
 import styled from 'styled-components';
 import { getTeachers } from '../../api/api';
+import _debounce from 'lodash.debounce';
 
 const Search = styled(Input.Search)`
   width: 30%;
@@ -16,71 +17,10 @@ const AddSearch = styled.div`
   align-item: center;
   margin-bottom: 16px;
 `;
-const columns = [
-  {
-    title: 'No.',
-    key: 'index',
-    render: (_1, _2, index) => index + 1,
-  },
-  {
-    title: 'Name',
-    dataIndex: 'name',
-    sorter: (prevStudent, nextStudent) =>
-      prevStudent.name.localeCompare(nextStudent.name),
-    render: (_, record) => <a>{record.name}</a>,
-  },
-  {
-    title: 'Country',
-    dataIndex: 'country',
-    filters: [
-      {
-        text: 'China',
-        value: 'China',
-      },
-      {
-        text: 'New Zealand',
-        value: 'New Zealand',
-      },
-      {
-        text: 'Canada',
-        value: 'Canada',
-      },
-      {
-        text: 'Australia',
-        value: 'Australia',
-      },
-    ],
-    onFilter: (value, record) => record.country.includes(value),
-  },
-  {
-    title: 'Email',
-    dataIndex: 'email',
-  },
-  {
-    title: 'Skill',
-    dataIndex: 'skills',
-    render: (skills) => skills.map((skill) => skill.name).join(','),
-  },
-  {
-    title: 'Course Amount',
-    dataIndex: 'courseAmount',
-  },
-  {
-    title: 'Phone',
-    dataIndex: 'phone',
-  },
-  {
-    title: 'Action',
-    dataIndex: 'action',
-    render: (_, record) => (
-      <Space size="middle">
-        <a>Edit</a>
-        <a>Delete</a>
-      </Space>
-    ),
-  },
-];
+
 export default function Teachers() {
+  const [form] = Form.useForm();
+  const [isAdd, setIsAdd] = useState(false);
   const [data, setData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [total, setTotal] = useState(0);
@@ -89,6 +29,11 @@ export default function Teachers() {
     limit: 20,
   });
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [editValues, setEditValues] = useState({});
+  const debounceValue = useCallback(
+    _debounce(handleDebounceFunction, 1000),
+    []
+  );
 
   useEffect(() => {
     setIsLoading(true);
@@ -102,15 +47,124 @@ export default function Teachers() {
       .finally(() => setIsLoading(false));
   }, [pagination]);
 
+  const columns = [
+    {
+      title: 'No.',
+      key: 'index',
+      render: (_1, _2, index) => index + 1,
+    },
+    {
+      title: 'Name',
+      dataIndex: 'name',
+      sorter: (prevStudent, nextStudent) =>
+        prevStudent.name.localeCompare(nextStudent.name),
+      render: (_, record) => <a>{record.name}</a>,
+    },
+    {
+      title: 'Country',
+      dataIndex: 'country',
+      filters: [
+        {
+          text: 'China',
+          value: 'China',
+        },
+        {
+          text: 'New Zealand',
+          value: 'New Zealand',
+        },
+        {
+          text: 'Canada',
+          value: 'Canada',
+        },
+        {
+          text: 'Australia',
+          value: 'Australia',
+        },
+      ],
+      onFilter: (value, record) => record.country.includes(value),
+    },
+    {
+      title: 'Email',
+      dataIndex: 'email',
+    },
+    {
+      title: 'Skill',
+      dataIndex: 'skills',
+      render: (skills) => skills.map((skill) => skill.name).join(','),
+    },
+    {
+      title: 'Course Amount',
+      dataIndex: 'courseAmount',
+    },
+    {
+      title: 'Phone',
+      dataIndex: 'phone',
+    },
+    {
+      title: 'Action',
+      dataIndex: 'action',
+      render: (_, record) => (
+        <Space size="middle">
+          <a
+            onClick={() => {
+              setIsAdd(false);
+              setEditValues(record);
+              setIsModalVisible(true);
+            }}
+          >
+            Edit
+          </a>
+          <a>Delete</a>
+        </Space>
+      ),
+    },
+  ];
+
+  function handleDebounceFunction(query, pagination) {
+    console.log(pagination, query);
+    getTeachers({
+      query,
+      ...pagination,
+    }).then((res) => {
+      if (res) {
+        setData(res.teachers);
+      }
+    });
+  }
+
   return (
     <>
       <AddSearch>
-        <Button type="primary" onClick={() => setIsModalVisible(true)}>
+        <Button
+          type="primary"
+          onClick={() => {
+            setIsModalVisible(true);
+            setIsAdd(true);
+            setEditValues({});
+          }}
+        >
           + Add
         </Button>
-        <Search placeholder="Search by Name" />
+        <Search
+          placeholder="Search by Name"
+          onChange={(event) => {
+            if (event.target.value !== '') {
+              debounceValue(event.target.value, pagination);
+            }
+          }}
+        />
       </AddSearch>
-      <TeacherForm isModalVisible={isModalVisible} setIsModalVisible={setIsModalVisible}/>
+      <Modal
+        centered
+        destroyOnClose
+        visible={isModalVisible}
+        title={isAdd ? 'Add Teacher' : 'Edit Teacher'}
+        onCancel={() => setIsModalVisible(false)}
+        okText={isAdd ? 'Add' : 'Update'}
+        onOk={form.submit}
+      >
+        <TeacherForm isAdd={isAdd} editValues={editValues} form={form}/>
+      </Modal>
       <Table
         rowKey={'id'}
         columns={columns}
